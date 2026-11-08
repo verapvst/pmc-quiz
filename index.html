@@ -224,6 +224,10 @@ body:not(.host){padding-block:0}
 .slcanvas .big{font-size:96px}
 .slcanvas .qr{flex:none}
 @media (max-width:1100px){.qlayout.wideprev{grid-template-columns:1fr}}
+.big span{display:inline-block}
+.big span.bump{animation:pop .4s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.2);color:var(--orange)}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.big span.bump{animation:none}}
 .hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px;align-items:stretch}
 .hgrid .wide{grid-column:1/-1}
 .card.h{gap:12px}
@@ -398,8 +402,8 @@ function chart(scores, o){
   const big = w > 600;
   const pad = { l:10, r:10, t:fs*2.8, b:fs*2.2 };
   const iw = w - pad.l - pad.r, ih = h - pad.t - pad.b, n = MAX + 1, bw = iw / n;
-  const c = Array(n).fill(0);
-  scores.forEach(s => { if (s >= 0 && s <= MAX) c[s]++; });
+  const c = o.counts ? o.counts : Array(n).fill(0);
+  if (!o.counts) scores.forEach(s => { if (s >= 0 && s <= MAX) c[s]++; });
   const sig = 1.1, curve = [];
   for (let x = 0; x <= MAX + 1e-9; x += 0.1){
     let v = 0;
@@ -660,32 +664,49 @@ function start(){
     btn.dataset.armed = String(setTimeout(() => { delete btn.dataset.armed; btn.textContent = idle; }, 4000));
   }
 
-  function addSim(){
+  let simTimer = 0, simLeft = 0;
+  function simLabel(){ const b = $("#bSim"); if (b) b.textContent = simLeft > 0 ? "Stop simulation" : "Add 50 mock answers"; }
+  function makeSim(){
     const prior = { q0:.3, q1:.85, q2:.6, q3:.55, q4:.9, q5:.95, q6:.35, q7:.3, q8:.9, q9:.8, q10:.5, q11:.8 };
     const pr = { stocks:.85, funds:.65, ppr:.45, crypto:.4, bonds:.3 };
-    const upd = {};
-    for (let n = 1; n <= 50; n++){
-      const base = 0.75 + Math.random()*0.5;
-      const a = {}; let invested = true;
-      QUESTIONS.forEach(q => {
-        const yes = Math.random() < Math.min(.95, (prior[q.id] || .6)*base) ? 1 : 0;
-        a[q.id] = yes;
-        if (q.id === "q11") invested = yes === 1;
-      });
-      const inst = {};
-      if (invested) INSTRUMENTS.forEach(([k]) => { if (Math.random() < (pr[k] || .4)*base) inst[k] = true; });
-      upd["sim_" + String(n).padStart(3, "0")] = { sim:true, a:a, i:inst };
-    }
-    playersRef.update(upd);
+    const base = 0.75 + Math.random()*0.5;
+    const a = {}; let invested = true;
+    QUESTIONS.forEach(q => {
+      const yes = Math.random() < Math.min(.95, (prior[q.id] || .6)*base) ? 1 : 0;
+      a[q.id] = yes;
+      if (q.id === "q11") invested = yes === 1;
+    });
+    const inst = {};
+    if (invested) INSTRUMENTS.forEach(([k]) => { if (Math.random() < (pr[k] || .4)*base) inst[k] = true; });
+    return { sim:true, a:a, i:inst };
   }
+  /* mock answers arrive one by one, like people scanning the QR code */
+  function addSim(){
+    const taken = new Set(Object.keys(players));
+    let next = 1;
+    simLeft = 50;
+    const step = () => {
+      if (simLeft <= 0) return;
+      let id;
+      do { id = "sim_" + String(next++).padStart(3, "0"); } while (taken.has(id));
+      taken.add(id);
+      playersRef.child(id).set(makeSim());
+      simLeft--;
+      simLabel();
+      if (simLeft > 0) simTimer = setTimeout(step, 120 + Math.random()*320);
+    };
+    step();
+  }
+  function stopSim(){ clearTimeout(simTimer); simLeft = 0; simLabel(); }
 
   function removeSim(){
+    stopSim();
     const upd = {};
     Object.keys(players).filter(k => k.indexOf("sim_") === 0).forEach(k => { upd[k] = null; });
     if (Object.keys(upd).length) playersRef.update(upd);
   }
 
-  function restartQuiz(){ playersRef.remove(); stateRef.remove(); }
+  function restartQuiz(){ stopSim(); playersRef.remove(); stateRef.remove(); }
 
   function loadScript(src){
     return new Promise((res, rej) => {
@@ -924,6 +945,7 @@ function start(){
     if (document.activeElement !== $("#outScore")) $("#outScore").value = config.score;
     if (document.activeElement !== $("#outLabel")) $("#outLabel").value = config.label;
     $("#outScore").max = MAX;
+    simLabel();
     const ed = $("#tabQuiz");
     if (ed){
       const es = $("#tabSlides");
@@ -943,6 +965,7 @@ function start(){
 
   function startPresent(){
     mode = "present"; step = 0; builtMode = ""; stageKey = "";
+    anim.n = 0; anim.avg = 0; anim.cur = null; anim.tgt = null; anim.st = null;
     const de = document.documentElement;
     if (de.requestFullscreen && !document.fullscreenElement) de.requestFullscreen().catch(() => {});
     draw();
@@ -1001,6 +1024,40 @@ function start(){
     }
   }
 
+  /* smooth bars, curve and counters: values glide toward their targets */
+  const anim = { cur:null, tgt:null, n:0, nT:0, avg:0, avgT:0, raf:0, last:0, st:null };
+  function animStart(){ if (!anim.raf){ anim.last = performance.now(); anim.raf = requestAnimationFrame(animFrame); } }
+  function animFrame(t){
+    anim.raf = 0;
+    if (mode !== "present") return;
+    const dt = Math.min(64, Math.max(1, t - anim.last)); anim.last = t;
+    const calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const kc = calm ? 1 : 1 - Math.exp(-dt / 170), kn = calm ? 1 : 1 - Math.exp(-dt / 260);
+    let moving = false;
+    if (anim.cur && anim.tgt) for (let i = 0; i < anim.cur.length; i++){
+      const d = anim.tgt[i] - anim.cur[i];
+      if (Math.abs(d) < .004) anim.cur[i] = anim.tgt[i]; else { anim.cur[i] += d * kc; moving = true; }
+    }
+    let d = anim.nT - anim.n;
+    if (Math.abs(d) < .01) anim.n = anim.nT; else { anim.n += d * kn; moving = true; }
+    d = anim.avgT - anim.avg;
+    if (Math.abs(d) < .005) anim.avg = anim.avgT; else { anim.avg += d * kn; moving = true; }
+    paintAnim();
+    if (moving) animStart();
+  }
+  function paintAnim(){
+    const st = anim.st; if (!st) return;
+    if (st.t === "qr"){
+      const el = document.getElementById("sCount"); if (!el) return;
+      const v = String(Math.round(anim.n));
+      if (v !== el.textContent){ el.textContent = v; el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+    } else if (st.t === "curve" && anim.cur){
+      const m = document.getElementById("sMeta"), c = document.getElementById("sChart"); if (!m || !c) return;
+      m.textContent = fillMeta(FORM.resMeta, Math.round(anim.n), anim.avg);
+      c.innerHTML = chart(null, { counts: anim.cur, w:1000, h:520, fs:20, reserve:true, out: st.hot ? { score: config.score, label: config.label, hot: true } : null });
+    }
+  }
+
   function updatePresent(){
     const steps = getSteps();
     step = Math.max(0, Math.min(steps.length - 1, step));
@@ -1013,14 +1070,15 @@ function start(){
       $("#pres").classList.toggle("img", st.t === "img");
       buildStage(st);
     }
-    if (st.t === "qr"){
-      $("#sCount").textContent = n;
-    } else if (st.t === "curve"){
-      const scores = list.map(scoreOf);
-      const avg = n ? scores.reduce((a, b) => a + b, 0) / n : 0;
-      $("#sMeta").textContent = fillMeta(FORM.resMeta, n, avg);
-      $("#sChart").innerHTML = chart(scores.concat([config.score]), { w:1000, h:520, fs:20, reserve:true, out: st.hot ? { score: config.score, label: config.label, hot: true } : null });
-    }
+    const scoresAll = list.map(scoreOf);
+    anim.st = st; anim.nT = n; anim.avgT = n ? scoresAll.reduce((a, b) => a + b, 0) / n : 0;
+    if (st.t === "curve"){
+      if (!anim.cur || anim.cur.length !== MAX + 1) anim.cur = Array(MAX + 1).fill(0);
+      const tg = Array(MAX + 1).fill(0);
+      scoresAll.concat([config.score]).forEach(v => { if (v >= 0 && v <= MAX) tg[v]++; });
+      anim.tgt = tg;
+    } else { anim.cur = null; anim.tgt = null; }
+    paintAnim(); animStart();
     $("#pPos").textContent = (step + 1) + " / " + steps.length;
     $("#pPrev").disabled = step === 0;
     $("#pNext").disabled = step === steps.length - 1;
@@ -1045,7 +1103,7 @@ function start(){
     $app.addEventListener("click", e => {
       const id = e.target.closest("button, label, input, [id]") ? (e.target.closest("[id]") || {}).id : "";
       if (id === "bPresent") startPresent();
-      else if (id === "bSim") addSim();
+      else if (id === "bSim") (simLeft > 0 ? stopSim() : addSim());
       else if (id === "bUnsim") removeSim();
       else if (id === "bReset") twoClick(e.target.closest("button"), "Restart quiz", restartQuiz);
       else if (id === "bRmDeck") twoClick(e.target.closest("button"), "Remove presentation", () => { deckRef.remove(); const m = $("#deckMsg"); if (m) m.textContent = ""; const b = $("#deckBar"); if (b) b.style.width = "0%"; });
