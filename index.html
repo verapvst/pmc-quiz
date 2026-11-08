@@ -75,10 +75,10 @@ svg{display:block;width:100%;height:auto}
 .foot{font-size:.85rem;color:var(--muted);text-align:center}
 
 /* chart */
-.bar{fill:#F9C9A8}
+.bar{fill:#CFCFCF}
 .bar.you{fill:var(--orange)}
-.area{fill:var(--orange);fill-opacity:.09}
-.line{fill:none;stroke:var(--orange-d);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.area{fill:#7F7F7F;fill-opacity:.08}
+.line{fill:none;stroke:#7F7F7F;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
 .axis{stroke:var(--ink);stroke-width:1.5}
 .tick{fill:var(--muted);font-family:var(--body);font-weight:600}
 .tick.you{fill:var(--orange-d)}
@@ -139,7 +139,12 @@ body.present{padding:0;height:100svh;overflow:hidden}
 .obar{fill:#A0A0A0}
 .obar.hot{fill:var(--orange)}
 .arrow{fill:var(--orange)}
+.astem{stroke:var(--orange);stroke-width:3}
+.astem.alt{stroke:var(--navy)}
 .olbl{fill:var(--orange-d);font-family:var(--display);font-weight:700}
+.obar.hot.alt,.arrow.alt{fill:var(--navy)}
+.olbl.hot.alt{fill:var(--navy)}
+.sw.navy{background:var(--navy)}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -244,13 +249,15 @@ function chart(scores, o){
   }
   if (out){
     const ox = X(out.score), top = base - (oc[out.score]/ymax)*ih, uh = ih/ymax;
-    s += '<rect class="obar' + (out.hot ? ' hot' : '') + '" x="' + f(ox-bw*.38) + '" y="' + f(top) + '" width="' + f(bw*.76) + '" height="' + f(uh) + '" rx="' + f(Math.min(4,bw*.12)) + '"/>';
+    s += '<rect class="obar' + (out.hot ? ' hot' : '') + (out.alt ? ' alt' : '') + '" x="' + f(ox-bw*.38) + '" y="' + f(top) + '" width="' + f(bw*.76) + '" height="' + f(uh) + '" rx="' + f(Math.min(4,bw*.12)) + '"/>';
     if (out.hot){
       const tipY = top - fs*(big ? 1.9 : 1.1), ah = fs*1.5, aw = fs*.9;
       const anchor = ox < w*.22 ? "start" : (ox > w*.78 ? "end" : "middle");
       const lx = anchor === "start" ? ox - bw*.4 : (anchor === "end" ? ox + bw*.4 : ox);
-      s += '<path class="arrow" d="M' + f(ox-aw) + ',' + f(tipY-ah) + ' L' + f(ox+aw) + ',' + f(tipY-ah) + ' L' + f(ox) + ',' + f(tipY) + ' Z"/>';
-      s += '<text class="olbl hot" x="' + f(lx) + '" y="' + f(tipY-ah-fs*.5) + '" font-size="' + f(fs*1.15) + '" text-anchor="' + anchor + '">' + esc(out.label) + '</text>';
+      const ly = fs*1.9;
+      s += '<line class="astem' + (out.alt ? ' alt' : '') + '" x1="' + f(ox) + '" x2="' + f(ox) + '" y1="' + f(ly+fs*.6) + '" y2="' + f(tipY-ah) + '"/>';
+      s += '<path class="arrow' + (out.alt ? ' alt' : '') + '" d="M' + f(ox-aw) + ',' + f(tipY-ah) + ' L' + f(ox+aw) + ',' + f(tipY-ah) + ' L' + f(ox) + ',' + f(tipY) + ' Z"/>';
+      s += '<text class="olbl hot' + (out.alt ? ' alt' : '') + '" x="' + f(lx) + '" y="' + f(ly) + '" font-size="' + f(fs*1.15) + '" text-anchor="' + anchor + '">' + esc(out.label) + '</text>';
     }
   }
   return s + '</svg>';
@@ -347,8 +354,8 @@ function start(){
     const o = state.outlier;
     $app.innerHTML = '<div class="p"><div class="brand"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos">PMC Live Quiz</div><div class="prog"><i style="width:100%"></i></div>' +
       '<div class="card" style="align-items:center;text-align:center"><p class="qno">Your score</p><div class="score">' + s + '<small> / ' + MAX + '</small></div><p class="rank">' + rank + '</p></div>' +
-      '<div class="card"><p class="qno">The whole room, live (' + all.length + ' so far)</p>' + chart(all, { w:360, h:250, fs:11, you:s, out:o }) +
-      '<p class="legend"><span><i class="sw ink"></i>You</span>' + (o ? '<span><i class="sw"></i>Our guest, ' + o.score + ' points</span>' : '') + '</p></div>' +
+      '<div class="card"><p class="qno">The whole room, live (' + all.length + ' so far)</p>' + chart(all, { w:360, h:250, fs:11, you:s, out: o ? { score:o.score, label:o.label, hot:true, alt:true } : null }) +
+      '<p class="legend"><span><i class="sw"></i>You</span>' + (o ? '<span><i class="sw navy"></i>Our guest, ' + o.score + ' points</span>' : '') + '</p></div>' +
       '<p class="foot">Keep this page open and watch the main screen.</p></div>';
   }
 
@@ -384,7 +391,7 @@ function start(){
   const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
   const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
   const clampScore = v => Math.max(0, Math.min(MAX, parseInt(v, 10) || 0));
-  let config = { score: 3, label: DEFAULT_LABEL };
+  let config = { score: 1, label: DEFAULT_LABEL };
   let deck = null;
   let deckCache = [];
   let mode = "home", builtMode = "", stageKey = "", step = 0, idleTimer = 0;
@@ -508,7 +515,7 @@ function start(){
       '<section class="card"><h2 class="ct">Guest outlier</h2>' +
         '<label class="field">Score<input type="number" id="outScore" min="0" max="' + MAX + '"></label>' +
         '<label class="field">Label<input type="text" id="outLabel"></label>' +
-        '<p class="note">Added as one more bar, grey at first. On the next step it turns orange with an arrow and this label.</p></section>' +
+        '<p class="note">Shown as an orange bar with an arrow and this label, on the last results screen.</p></section>' +
       '<section class="card"><h2 class="ct">Participant link</h2><p class="url">' + esc(joinUrl) + '</p>' +
         '<div class="row"><button class="b ghost" id="bCopy">Copy link</button></div></section>' +
       '<section class="card wide"><h2 class="ct">Live preview</h2><div id="prevChart" class="prev"></div></section>' +
@@ -524,12 +531,12 @@ function start(){
     const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
     $("#hReal").textContent = real; $("#hMock").textContent = mock; $("#hAvg").textContent = avg.toFixed(1);
     $("#deckStatus").textContent = deck ? deck.name + ", " + deck.count + " slides" : "No presentation uploaded yet.";
-    const parts = ["QR code", "live results", "guest outlier"];
+    const parts = ["QR code", "live results", "live results with the guest arrow"];
     if (deck) parts.push(deck.count + " slides");
     $("#presInfo").textContent = "Present plays: " + parts.join(", then ") + ".";
     if (document.activeElement !== $("#outScore")) $("#outScore").value = config.score;
     if (document.activeElement !== $("#outLabel")) $("#outLabel").value = config.label;
-    $("#prevChart").innerHTML = chart(scores, { w:900, h:340, fs:15, out: { score: config.score, label: config.label, hot: false } });
+    $("#prevChart").innerHTML = chart(scores, { w:900, h:340, fs:15, out: { score: config.score, label: config.label, hot: true } });
   }
 
   function startPresent(){
@@ -577,7 +584,7 @@ function start(){
       b.innerHTML = src ? '<img class="slideimg" alt="" src="' + src + '">' : '<div class="ph"><p class="qno">Loading slide ' + (st.i + 1) + '</p></div>';
     } else {
       b.innerHTML = '<div class="lobby"><div class="lobtxt"><p class="qno">Scan with your phone</p>' +
-        '<h1 class="hq">17 quick questions. 2 to 3 minutes.</h1><p class="sub">Anonymous. You get your own score, and we all see the room.</p><p class="url">' + esc(joinUrl) + '</p>' +
+        '<h1 class="hq">17 quick questions. 2 to 3 minutes.</h1><p class="sub">Anonymous. You get your own score, and we all see the room.</p>' +
         '<p class="big"><span id="sCount">0</span> <small>have answered</small></p></div><div class="qr" id="qr"></div></div>';
       const box = document.getElementById("qr");
       if (typeof QRCode !== "undefined") new QRCode(box, { text: joinUrl, width: 340, height: 340, colorDark: "#3A3A3A", colorLight: "#FFFFFF", correctLevel: QRCode.CorrectLevel.M });
@@ -603,7 +610,7 @@ function start(){
       const scores = list.map(scoreOf);
       const avg = n ? scores.reduce((a, b) => a + b, 0) / n : 0;
       $("#sMeta").textContent = n + " answered · average " + avg.toFixed(1) + " of " + MAX;
-      $("#sChart").innerHTML = chart(scores, { w:1000, h:520, fs:20, out: { score: config.score, label: config.label, hot: !!st.hot } });
+      $("#sChart").innerHTML = chart(scores, { w:1000, h:520, fs:20, out: st.hot ? { score: config.score, label: config.label, hot: true } : null });
     }
     $("#pPos").textContent = (step + 1) + " / " + steps.length;
     $("#pPrev").disabled = step === 0;
