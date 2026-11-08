@@ -665,7 +665,7 @@ function start(){
   }
 
   let simTimer = 0, simLeft = 0;
-  function simLabel(){ const b = $("#bSim"); if (b) b.textContent = simLeft > 0 ? "Stop simulation" : "Add 50 mock answers"; }
+  function simLabel(){ const b = $("#bSim"); if (b) b.textContent = simLeft > 0 ? "Simulation running" : "Rehearse with a live simulation"; }
   function makeSim(){
     const prior = { q0:.3, q1:.85, q2:.6, q3:.55, q4:.9, q5:.95, q6:.35, q7:.3, q8:.9, q9:.8, q10:.5, q11:.8 };
     const pr = { stocks:.85, funds:.65, ppr:.45, crypto:.4, bonds:.3 };
@@ -693,9 +693,14 @@ function start(){
       playersRef.child(id).set(makeSim());
       simLeft--;
       simLabel();
-      if (simLeft > 0) simTimer = setTimeout(step, 120 + Math.random()*320);
+      if (simLeft > 0) simTimer = setTimeout(step, 200 + Math.random()*500);
     };
     step();
+  }
+  function rehearse(){
+    removeSim();
+    startPresent();
+    setTimeout(addSim, 1500);
   }
   function stopSim(){ clearTimeout(simTimer); simLeft = 0; simLabel(); }
 
@@ -914,7 +919,8 @@ function start(){
         '<div class="stats"><div><div class="stat" id="hReal">0</div><div class="note">real</div></div>' +
         '<div><div class="stat soft" id="hMock">0</div><div class="note">mock</div></div>' +
         '<div><div class="stat" id="hAvg">0</div><div class="note">average score</div></div></div>' +
-        '<div class="row"><button class="b ghost" id="bSim">Add 50 mock answers</button><button class="b ghost" id="bUnsim">Remove mock answers</button></div></section>' +
+        '<p class="note">Rehearse: the presentation starts from zero and 50 mock answers arrive one by one, on the QR slide and on the graph slide.</p>' +
+        '<div class="row"><button class="b" id="bSim">Rehearse with a live simulation</button><button class="b ghost" id="bUnsim">Remove mock answers</button></div></section>' +
       '<section class="card h"><h2 class="ct"><span class="step alt">3</span>On the day</h2>' +
         '<p class="note">Before the event, restart the quiz. This deletes every answer, real and mock, so the room starts at zero. The presentation and the guest score stay.</p>' +
         '<div class="row"><button class="b ghost danger" id="bReset">Restart quiz</button></div></section>' +
@@ -972,6 +978,7 @@ function start(){
   }
 
   function exitPresent(){
+    stopSim();
     mode = "home"; builtMode = "";
     if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
     draw();
@@ -1103,7 +1110,7 @@ function start(){
     $app.addEventListener("click", e => {
       const id = e.target.closest("button, label, input, [id]") ? (e.target.closest("[id]") || {}).id : "";
       if (id === "bPresent") startPresent();
-      else if (id === "bSim") (simLeft > 0 ? stopSim() : addSim());
+      else if (id === "bSim") rehearse();
       else if (id === "bUnsim") removeSim();
       else if (id === "bReset") twoClick(e.target.closest("button"), "Restart quiz", restartQuiz);
       else if (id === "bRmDeck") twoClick(e.target.closest("button"), "Remove presentation", () => { deckRef.remove(); const m = $("#deckMsg"); if (m) m.textContent = ""; const b = $("#deckBar"); if (b) b.style.width = "0%"; });
