@@ -8,14 +8,14 @@ Painel de controlo (para ti e para o teu pai): https://verapvst.github.io/pmc-qu
 No painel de controlo tens tudo num sítio:
 1. Respostas: quantas já responderam, botão para adicionar 50 respostas de teste, botão para as remover, e o botão Restart quiz que apaga todas as respostas.
 2. Apresentação: o teu pai carrega aqui o PDF dele.
-3. Guest outlier: a pontuação e o texto do ponto do teu pai (por defeito 3 e "Our guest at your age").
-4. Live preview: vês a curva a crescer, com o ponto a cinzento.
+3. Guest outlier: a pontuação do teu pai (por defeito 3) e o texto (por defeito "Me at your age").
+4. Live preview: vês a curva a crescer, com a barra do teu pai a cinzento.
 5. Botão Present: arranca a apresentação em ecrã inteiro.
 
 Quando carregas em Present, a ordem é:
 1. QR code, com o contador de quem já respondeu.
-2. Resultados ao vivo, com o ponto do teu pai a cinzento.
-3. O mesmo ecrã com o ponto do teu pai a laranja.
+2. Resultados ao vivo. A pontuação do teu pai aparece como mais uma barra, a cinzento, em cima da barra da sala.
+3. O mesmo ecrã: a barra dele fica laranja e aparece uma seta com o texto "Me at your age".
 4. Os slides do PDF que ele carregou.
 
 ## Navegar na apresentação
