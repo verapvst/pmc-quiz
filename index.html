@@ -224,8 +224,8 @@ function chart(scores, o){
     for (let k = 0; k < n; k++) if (c[k]) v += c[k] * Math.exp(-((x-k)*(x-k)) / (2*sig*sig));
     curve.push([x, v / (sig * Math.sqrt(2*Math.PI))]);
   }
-  const oc = out ? c.map((v, k) => v + (out.score === k ? 1 : 0)) : c;
-  const ymax = Math.max(1, ...oc, ...curve.map(p => p[1])) * 1.15 + (out ? 1.2 : 0);
+  const oc = c;
+  const ymax = Math.max(1, ...oc, ...curve.map(p => p[1])) * 1.15 + (out || o.reserve ? 1.2 : 0);
   const X = k => pad.l + bw*(k+0.5);
   const Y = v => pad.t + ih - (v/ymax)*ih;
   const base = pad.t + ih;
@@ -248,7 +248,7 @@ function chart(scores, o){
     s += '<text class="youlbl" x="' + f(X(you)) + '" y="' + f(by - fs*(big ? 1.9 : 0.7)) + '" font-size="' + f(fs*1.1) + '" text-anchor="middle">You</text>';
   }
   if (out){
-    const ox = X(out.score), top = base - (oc[out.score]/ymax)*ih, uh = ih/ymax;
+    const ox = X(out.score), top = base - (oc[out.score]/ymax)*ih, uh = Math.min(ih/ymax, base - top);
     s += '<rect class="obar' + (out.hot ? ' hot' : '') + (out.alt ? ' alt' : '') + '" x="' + f(ox-bw*.38) + '" y="' + f(top) + '" width="' + f(bw*.76) + '" height="' + f(uh) + '" rx="' + f(Math.min(4,bw*.12)) + '"/>';
     if (out.hot){
       const tipY = top - fs*(big ? 1.9 : 1.1), ah = fs*1.5, aw = fs*.9;
@@ -304,13 +304,13 @@ function start(){
 
   function renderForm(){
     $app.innerHTML = '<div class="p"><div class="brand"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos">PMC Live Quiz</div>' +
-      '<div class="card"><h1 class="title">17 quick questions</h1>' +
+      '<div class="card"><h1 class="title">13 quick questions</h1>' +
       '<p class="note">Takes 2 to 3 minutes. Fully anonymous. You see your own score at the end, and the whole room appears on the main screen.</p></div>' +
       QUESTIONS.map((t, q) =>
-        '<section class="card"><p class="qno">' + (q+1) + ' of ' + NQ + '</p><h2 class="qtext">' + esc(t) + '</h2>' +
+        '<section class="card"><p class="qno">' + (q+1) + ' of ' + (NQ+1) + '</p><h2 class="qtext">' + esc(t) + '</h2>' +
         '<div class="yn"><button class="pill yes" data-q="' + q + '" data-v="1" aria-pressed="false">Yes</button>' +
         '<button class="pill no" data-q="' + q + '" data-v="0" aria-pressed="false">No</button></div></section>').join("") +
-      '<section class="card"><p class="qno">Last one</p><h2 class="qtext">Which of these have you invested in?</h2>' +
+      '<section class="card"><p class="qno">' + (NQ+1) + ' of ' + (NQ+1) + '</p><h2 class="qtext">Which of these have you invested in?</h2>' +
       '<p class="note">Each one you tick is worth 1 point.</p><div class="chips">' +
       INSTRUMENTS.map(([k, l]) => '<button class="chip" data-i="' + k + '" aria-pressed="false"><span>' + esc(l) + '</span><b></b></button>').join("") +
       '</div></section>' +
@@ -354,7 +354,7 @@ function start(){
     const o = state.outlier;
     $app.innerHTML = '<div class="p"><div class="brand"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos">PMC Live Quiz</div><div class="prog"><i style="width:100%"></i></div>' +
       '<div class="card" style="align-items:center;text-align:center"><p class="qno">Your score</p><div class="score">' + s + '<small> / ' + MAX + '</small></div><p class="rank">' + rank + '</p></div>' +
-      '<div class="card"><p class="qno">The whole room, live (' + all.length + ' so far)</p>' + chart(all, { w:360, h:250, fs:11, you:s, out: o ? { score:o.score, label:o.label, hot:true, alt:true } : null }) +
+      '<div class="card"><p class="qno">The whole room, live (' + all.length + ' so far)</p>' + chart(o ? all.concat([o.score]) : all, { w:360, h:250, fs:11, you:s, out: o ? { score:o.score, label:o.label, hot:true, alt:true } : null }) +
       '<p class="legend"><span><i class="sw"></i>You</span>' + (o ? '<span><i class="sw navy"></i>Our guest, ' + o.score + ' points</span>' : '') + '</p></div>' +
       '<p class="foot">Keep this page open and watch the main screen.</p></div>';
   }
@@ -421,11 +421,11 @@ function start(){
   }
 
   function addSim(){
-    const prior = [.3,.7,.4,.35,.75,.7,.25,.2,.65,.4,.35,.55];
-    const pr = { stocks:.8, funds:.5, ppr:.35, crypto:.35, bonds:.15 };
+    const prior = [.3,.85,.6,.55,.9,.95,.35,.3,.9,.8,.5,.8];
+    const pr = { stocks:.85, funds:.65, ppr:.45, crypto:.4, bonds:.3 };
     const upd = {};
     for (let n = 1; n <= 50; n++){
-      const base = 0.7 + Math.random()*0.6;
+      const base = 0.75 + Math.random()*0.5;
       const a = {}; let invested = false;
       for (let q = 0; q < NQ; q++){
         const yes = Math.random() < Math.min(.95, prior[q]*base) ? 1 : 0;
@@ -536,7 +536,7 @@ function start(){
     $("#presInfo").textContent = "Present plays: " + parts.join(", then ") + ".";
     if (document.activeElement !== $("#outScore")) $("#outScore").value = config.score;
     if (document.activeElement !== $("#outLabel")) $("#outLabel").value = config.label;
-    $("#prevChart").innerHTML = chart(scores, { w:900, h:340, fs:15, out: { score: config.score, label: config.label, hot: true } });
+    $("#prevChart").innerHTML = chart(scores.concat([config.score]), { w:900, h:340, fs:15, reserve:true, out: { score: config.score, label: config.label, hot: true } });
   }
 
   function startPresent(){
@@ -584,7 +584,7 @@ function start(){
       b.innerHTML = src ? '<img class="slideimg" alt="" src="' + src + '">' : '<div class="ph"><p class="qno">Loading slide ' + (st.i + 1) + '</p></div>';
     } else {
       b.innerHTML = '<div class="lobby"><div class="lobtxt"><p class="qno">Scan with your phone</p>' +
-        '<h1 class="hq">17 quick questions. 2 to 3 minutes.</h1><p class="sub">Anonymous. You get your own score, and we all see the room.</p>' +
+        '<h1 class="hq">13 quick questions. 2 to 3 minutes.</h1><p class="sub">Anonymous. You get your own score, and we all see the room.</p>' +
         '<p class="big"><span id="sCount">0</span> <small>have answered</small></p></div><div class="qr" id="qr"></div></div>';
       const box = document.getElementById("qr");
       if (typeof QRCode !== "undefined") new QRCode(box, { text: joinUrl, width: 340, height: 340, colorDark: "#3A3A3A", colorLight: "#FFFFFF", correctLevel: QRCode.CorrectLevel.M });
@@ -610,7 +610,7 @@ function start(){
       const scores = list.map(scoreOf);
       const avg = n ? scores.reduce((a, b) => a + b, 0) / n : 0;
       $("#sMeta").textContent = n + " answered · average " + avg.toFixed(1) + " of " + MAX;
-      $("#sChart").innerHTML = chart(scores, { w:1000, h:520, fs:20, out: st.hot ? { score: config.score, label: config.label, hot: true } : null });
+      $("#sChart").innerHTML = chart(scores.concat([config.score]), { w:1000, h:520, fs:20, reserve:true, out: st.hot ? { score: config.score, label: config.label, hot: true } : null });
     }
     $("#pPos").textContent = (step + 1) + " / " + steps.length;
     $("#pPrev").disabled = step === 0;
