@@ -606,7 +606,6 @@ function start(){
       '<section class="card h"><h2 class="ct"><span class="step alt">4</span>On the day</h2>' +
         '<p class="note">Before the event, restart the quiz. This deletes every answer, real and mock, so the room starts at zero. The presentation and the guest score stay.</p>' +
         '<div class="row"><button class="b ghost danger" id="bReset">Restart quiz</button></div></section>' +
-      '<section class="card h wide"><h2 class="ct">Live preview</h2><div id="prevChart" class="prev"></div></section>' +
       '<section class="card h wide"><h2 class="ct">Participant link</h2><div class="linkrow"><div class="qrs" id="homeQr"></div>' +
         '<div style="min-width:0;flex:1"><p class="url">' + esc(joinUrl) + '</p><div class="row" style="margin-top:10px"><button class="b ghost" id="bCopy">Copy link</button></div>' +
         '<p class="note" style="margin-top:8px">Scan with your phone to try the quiz yourself.</p></div></div></section>' +
@@ -632,7 +631,6 @@ function start(){
     $("#presSub").textContent = parts.join(" → ");
     if (document.activeElement !== $("#outScore")) $("#outScore").value = config.score;
     if (document.activeElement !== $("#outLabel")) $("#outLabel").value = config.label;
-    $("#prevChart").innerHTML = chart(scores.concat([config.score]), { w:900, h:340, fs:15, reserve:true, out: { score: config.score, label: config.label, hot: true } });
     const clean = list.length === 0, noMock = mock === 0, ready = !!deck && noMock && clean;
     const item = (ok, good, todo) => '<li><span class="c ' + (ok ? "yes" : "no") + '">' + (ok ? "\u2713" : "\u2022") + '</span>' + (ok ? good : todo) + '</li>';
     const rd = $("#ready");
