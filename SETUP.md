@@ -15,15 +15,14 @@ No painel há dois separadores: Control room e Quiz. No separador Quiz o teu pai
 
 ## Separador Slides
 
-O terceiro separador deixa o teu pai editar as palavras dos três slides do quiz: o do QR code (linha pequena, título, linha por baixo e o texto ao lado do contador), e os dois dos resultados (título de cada um e a linha pequena à direita, onde {count}, {avg} e {max} são preenchidos ao vivo). À direita há uma pré-visualização do slide, com setas para ver os três. O texto da seta ("Me at your age") continua no Control room, em Guest. Os slides do PDF vêm depois destes três.
+O terceiro separador deixa o teu pai editar as palavras dos três slides do quiz: o do QR code (linha pequena, título, linha por baixo e o texto ao lado do contador), e os dois dos resultados (título de cada um e a linha pequena à direita, onde {count}, {avg} e {max} são preenchidos ao vivo). À direita há uma pré-visualização do slide, com setas para ver os três. A pontuação do teu pai (por defeito 1) e o texto da seta ("Me at your age") também estão aqui, no cartão Guest, e a pré-visualização mostra a seta ao vivo. Os slides do PDF vêm depois destes três.
 
 ## Painel de controlo (separador Control room)
 
-Quatro cartões numerados:
+Três cartões numerados:
 1. Presentation: o teu pai carrega aqui o PDF (clicar ou arrastar).
-2. Guest: a pontuação do teu pai (por defeito 1) e o texto (por defeito "Me at your age").
-3. Test with mock answers: adiciona respostas de teste (a média fica mais à direita, como num clube de gestão de carteiras) e remove-as.
-4. On the day: botão Restart quiz, que apaga todas as respostas.
+2. Test with mock answers: adiciona respostas de teste (a média fica mais à direita, como num clube de gestão de carteiras) e remove-as.
+3. On the day: botão Restart quiz, que apaga todas as respostas.
 
 Há ainda o botão Present e o link dos participantes com um QR pequeno. A caixa "Before the event" mostra três verificações: carregar a apresentação (opcional), apagar as respostas de teste e reiniciar o quiz. Quando tudo está feito aparece "Ready for the day". Podes apresentar mesmo sem PDF.
 

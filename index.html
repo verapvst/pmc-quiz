@@ -838,12 +838,17 @@ function start(){
         field("resTitle", "Heading on slide 2 (graph)") +
         field("resTitle3", "Heading on slide 3 (graph with the guest arrow)") +
         field("resMeta", "Small line on the right", "{count}, {avg} and {max} are filled in live.") + '</div>' +
-        '<p class="note">The arrow text ("Me at your age") is set in the Control room, under Guest. Your uploaded slides come after these three.</p></section>' +
+        '<p class="note">Your uploaded slides come after these three.</p></section>' +
+      '<section class="card h"><h2 class="ct"><span class="step">3</span>Guest</h2>' +
+        '<div class="fields"><label class="field">Score<input type="number" id="outScore" min="0" max="' + MAX + '"></label>' +
+        '<label class="field">Arrow label<input type="text" id="outLabel"></label></div>' +
+        '<p class="note">Your father is counted in the graph from the start. On the last results screen an arrow and an orange segment point to his score.</p></section>' +
       '<section class="card h"><div class="row"><button class="b ghost danger" data-act="resetslides">Reset the slide wording</button></div>' +
       '<p class="note">Changes save by themselves.</p></section>' +
       '</div><aside class="pv"><p class="qno">Live slide preview</p><div class="slframe" id="slFrame"><div class="slcanvas"><div class="pres"><main class="pbody" id="slBody"></main>' +
       '<footer class="pfoot"><i class="pline"></i><img class="logo" src="' + LOGO + '" alt=""></footer></div></div></div>' +
       '<div class="pvnav"><button class="ib" data-sl="-1" aria-label="Previous slide">‹</button><span id="slPos"></span><button class="ib" data-sl="1" aria-label="Next slide">›</button></div></aside></div>';
+    $("#outScore").value = config.score; $("#outLabel").value = config.label;
     updateSlidePreview();
   }
   function updateSlidePreview(){
@@ -884,16 +889,12 @@ function start(){
         '<label class="drop" id="drop"><b>Drop a PDF here</b><span>or click to choose a file</span><input type="file" id="deckFile" accept=".pdf,.ppt,.pptx,application/pdf" hidden></label>' +
         '<div class="prog"><i id="deckBar" style="width:0%"></i></div><p class="note" id="deckMsg">From PowerPoint: File, Export, PDF. Animations and videos will not play.</p>' +
         '<div class="row"><button class="b ghost danger" id="bRmDeck">Remove presentation</button></div></section>' +
-      '<section class="card h"><h2 class="ct"><span class="step">2</span>Guest</h2>' +
-        '<div class="fields"><label class="field">Score<input type="number" id="outScore" min="0" max="' + MAX + '"></label>' +
-        '<label class="field">Arrow label<input type="text" id="outLabel"></label></div>' +
-        '<p class="note">Your father is counted in the graph from the start. On the last results screen an arrow and an orange segment point to his score.</p></section>' +
-      '<section class="card h"><h2 class="ct"><span class="step">3</span>Test with mock answers</h2>' +
+      '<section class="card h"><h2 class="ct"><span class="step">2</span>Test with mock answers</h2>' +
         '<div class="stats"><div><div class="stat" id="hReal">0</div><div class="note">real</div></div>' +
         '<div><div class="stat soft" id="hMock">0</div><div class="note">mock</div></div>' +
         '<div><div class="stat" id="hAvg">0</div><div class="note">average score</div></div></div>' +
         '<div class="row"><button class="b ghost" id="bSim">Add 50 mock answers</button><button class="b ghost" id="bUnsim">Remove mock answers</button></div></section>' +
-      '<section class="card h"><h2 class="ct"><span class="step alt">4</span>On the day</h2>' +
+      '<section class="card h"><h2 class="ct"><span class="step alt">3</span>On the day</h2>' +
         '<p class="note">Before the event, restart the quiz. This deletes every answer, real and mock, so the room starts at zero. The presentation and the guest score stay.</p>' +
         '<div class="row"><button class="b ghost danger" id="bReset">Restart quiz</button></div></section>' +
       '<section class="card h wide"><h2 class="ct">Participant link</h2><div class="linkrow"><div class="qrs" id="homeQr"></div>' +
@@ -1061,6 +1062,10 @@ function start(){
     });
     $app.addEventListener("input", e => {
       const t = e.target;
+      if (t.id === "outScore" || t.id === "outLabel"){
+        config = { score: clampScore($("#outScore").value), label: ($("#outLabel").value || "").trim() || DEFAULT_LABEL };
+        slStep = 2; updateSlidePreview(); return;
+      }
       if (t.dataset.f){ FORM[t.dataset.f] = t.value; commitForm(false); }
       else if (t.dataset.qt !== undefined){ FORM.questions[+t.dataset.qt].text = t.value; pvStep = pvIndexOf(+t.dataset.qt); commitForm(false); }
       else if (t.dataset.il !== undefined){ FORM.instruments[+t.dataset.il].label = t.value; commitForm(false); }
