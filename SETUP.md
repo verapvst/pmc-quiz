@@ -21,7 +21,7 @@ O terceiro separador deixa o teu pai editar as palavras dos três slides do quiz
 
 Três cartões numerados:
 1. Presentation: o teu pai carrega aqui o PDF (clicar ou arrastar).
-2. Test with mock answers: o botão "Rehearse with a live simulation" abre a apresentação a partir do zero e 50 respostas de teste chegam uma a uma (cerca de 25 segundos), primeiro no slide do QR e depois no gráfico. Esc pára a simulação. "Remove mock answers" apaga as respostas de teste.
+2. Test with mock answers: "Add 50 mock answers" guarda 50 respostas de teste logo. Quando carregas em Present, essas respostas aparecem uma a uma (cerca de 25 segundos), primeiro no slide do QR e depois no gráfico, para ensaiares como fica. "Remove mock answers" apaga-as.
 3. On the day: botão Restart quiz, que apaga todas as respostas.
 
 Há ainda o botão Present e o link dos participantes com um QR pequeno. A caixa "Before the event" mostra três verificações: carregar a apresentação (opcional), apagar as respostas de teste e reiniciar o quiz. Quando tudo está feito aparece "Ready for the day". Podes apresentar mesmo sem PDF.
