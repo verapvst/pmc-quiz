@@ -13,6 +13,10 @@ Título: "How’s your portfolio of experiences?". São 13 perguntas (12 de sim 
 
 No painel há dois separadores: Control room e Quiz. No separador Quiz o teu pai pode editar o título e o subtítulo, a frase do slide do QR (o {n} vira o número de perguntas), as perguntas de sim ou não (escrever, acrescentar, apagar com dois cliques, arrastar pelo ícone dos pontos ou usar as setas) e a pergunta dos instrumentos (título, opções, ordem). À direita há uma pré-visualização do telemóvel que acompanha o que ele está a editar. As alterações guardam sozinhas e chegam logo aos telemóveis. O topo da pontuação ajusta-se ao número de perguntas. Se já houver respostas, aparece um aviso: depois de editar, faz Restart quiz. O botão "Reset to the original questions" volta às perguntas iniciais.
 
+## Separador Slides
+
+O terceiro separador deixa o teu pai editar as palavras dos três slides do quiz: o do QR code (linha pequena, título, linha por baixo e o texto ao lado do contador), e os dois dos resultados (título de cada um e a linha pequena à direita, onde {count}, {avg} e {max} são preenchidos ao vivo). À direita há uma pré-visualização do slide, com setas para ver os três. O texto da seta ("Me at your age") continua no Control room, em Guest. Os slides do PDF vêm depois destes três.
+
 ## Painel de controlo (separador Control room)
 
 Quatro cartões numerados:

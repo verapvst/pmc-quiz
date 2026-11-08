@@ -214,6 +214,16 @@ body:not(.host){padding-block:0}
 .qrow:hover .qact .ib,.qrow:focus-within .qact .ib{border-color:var(--line);background:#fff;color:var(--ink)}
 @media (hover:none){.qact .ib{border-color:var(--line)}}
 @media (max-width:980px){.qlayout{grid-template-columns:1fr}.pv{position:static}}
+.qlayout.wideprev{grid-template-columns:minmax(0,1fr) 540px}
+.slframe{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+.slcanvas{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;pointer-events:none}
+.slcanvas .pres{height:720px;width:1280px;max-width:none;margin:0;padding:18px 36px 14px}
+.slcanvas .hq{font-size:51px}
+.slcanvas .hq.sm{font-size:45px}
+.slcanvas .sub{font-size:25px}
+.slcanvas .big{font-size:96px}
+.slcanvas .qr{flex:none}
+@media (max-width:1100px){.qlayout.wideprev{grid-template-columns:1fr}}
 .hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px;align-items:stretch}
 .hgrid .wide{grid-column:1/-1}
 .card.h{gap:12px}
@@ -305,6 +315,12 @@ const DEFAULT_FORM = {
   subtitle: "About 2 minutes. Anonymous. Let’s see if you beat the benchmark.",
   qrTitle: "Beat the benchmark. {n} questions, 2 minutes.",
   qrSub: "Anonymous. You get your own score, and we all see the room.",
+  qrEyebrow: "Scan with your phone",
+  qrCounter: "have answered",
+  resEyebrow: "Live scores",
+  resTitle: "Where the room landed",
+  resTitle3: "Where the room landed",
+  resMeta: "{count} answered \u00b7 average {avg} of {max}",
   questions: [
     { id:"q0", text:"Have you studied in a private school during high school?" },
     { id:"q1", text:"Have you travelled abroad before the age of 18?" },
@@ -333,6 +349,7 @@ function normalizeForm(v){
   const str = k => typeof v[k] === "string" ? v[k] : d[k];
   return {
     title: str("title"), subtitle: str("subtitle"), qrTitle: str("qrTitle"), qrSub: str("qrSub"),
+    qrEyebrow: str("qrEyebrow"), qrCounter: str("qrCounter"), resEyebrow: str("resEyebrow"), resTitle: str("resTitle"), resTitle3: str("resTitle3"), resMeta: str("resMeta"),
     questions: toArr(v.questions).map(q => ({ id:String(q.id), text:String(q.text || "") })),
     instrTitle: str("instrTitle"), instrNote: str("instrNote"),
     instruments: toArr(v.instruments).map(i => ({ id:String(i.id), label:String(i.label || "") }))
@@ -528,7 +545,6 @@ function start(){
     document.querySelectorAll("#stagebox [data-i]").forEach(b => {
       const on = !!draft.i[b.dataset.i];
       b.setAttribute("aria-pressed", String(on));
-      b.lastElementChild.textContent = on ? "+1" : "";
     });
     const cnt = document.getElementById("pcount"), bar = document.getElementById("pbar"), back = document.getElementById("backBtn");
     if (cnt) cnt.textContent = cur < 0 ? "" : Math.min(cur + 1, NTOT) + " of " + NTOT;
@@ -718,9 +734,11 @@ function start(){
   /* ----- quiz editor (tab) ----- */
   let homeTab = "control", editorKey = "", saveTimer = 0;
   function applyTab(){
-    const c = $("#tabControl"), q = $("#tabQuiz");
+    const c = $("#tabControl"), q = $("#tabQuiz"), sl = $("#tabSlides");
     if (c) c.hidden = homeTab !== "control";
     if (q) q.hidden = homeTab !== "quiz";
+    if (sl) sl.hidden = homeTab !== "slides";
+    if (homeTab === "slides") updateSlidePreview();
     document.querySelectorAll("[data-tab]").forEach(b => {
       const on = b.dataset.tab === homeTab;
       b.classList.toggle("on", on); b.setAttribute("aria-selected", String(on));
@@ -735,7 +753,7 @@ function start(){
   }
   function commitForm(rerender){
     derive(); editorKey = JSON.stringify(FORM); scheduleSave();
-    if (rerender) renderEditor(); else updateEditorMeta();
+    if (rerender){ renderEditor(); renderSlides(); } else updateEditorMeta();
   }
   let pvStep = -1;
   const pvIndexOf = fi => { let k = 0; for (let j = 0; j < fi; j++) if (FORM.questions[j].text.trim()) k++; return k; };
@@ -749,6 +767,7 @@ function start(){
   }
   function updateEditorMeta(){
     updatePreview();
+    updateSlidePreview();
     const sm = $("#qSummary"), w = $("#qWarn");
     if (sm) sm.textContent = NTOT + " questions on the phone (" + NQ + " yes or no" + (INSTRUMENTS.length ? ", plus the instruments question" : "") + "). Top score: " + MAX + " points.";
     if (w){
@@ -772,8 +791,6 @@ function start(){
       '<section class="card h"><h2 class="ct">Wording</h2><div class="fields one">' +
         field("title", "Quiz title (top of the phone)") +
         field("subtitle", "Subtitle") +
-        field("qrTitle", "QR slide headline", "{n} becomes the number of questions.") +
-        field("qrSub", "QR slide line under it") +
       '</div></section>' +
       '<section class="card h"><h2 class="ct">Instruments question</h2><div class="fields one">' +
         field("instrTitle", "Heading") + field("instrNote", "Helper line") + '</div>' +
@@ -794,6 +811,63 @@ function start(){
     updateEditorMeta();
   }
 
+  /* ----- slides editor (tab) ----- */
+  let slStep = 0;
+  const SL_NAMES = ["QR code", "Live results", "Guest arrow"];
+  function sampleScores(){
+    const out = [], mean = MAX * 0.6, sd = Math.max(1, MAX * 0.15);
+    for (let k = 0; k <= MAX; k++){
+      const c = Math.round(50 * Math.exp(-((k - mean) * (k - mean)) / (2 * sd * sd)) / (sd * Math.sqrt(2 * Math.PI)));
+      for (let j = 0; j < c; j++) out.push(k);
+    }
+    return out;
+  }
+  function renderSlides(){
+    const el = $("#tabSlides"); if (!el) return;
+    const f = FORM;
+    const field = (k, label, hint) => '<label class="field">' + label + '<input class="tin" type="text" data-f="' + k + '" value="' + esc(f[k]) + '">' + (hint ? '<span class="hint">' + hint + '</span>' : '') + '</label>';
+    el.innerHTML =
+      '<div class="qlayout wideprev"><div class="qcol">' +
+      '<section class="card h"><h2 class="ct"><span class="step">1</span>QR code slide</h2><div class="fields one">' +
+        field("qrEyebrow", "Small line above the headline") +
+        field("qrTitle", "Headline", "{n} becomes the number of questions.") +
+        field("qrSub", "Line under it", "{n} becomes the number of questions.") +
+        field("qrCounter", "Text next to the live counter") + '</div></section>' +
+      '<section class="card h"><h2 class="ct"><span class="step">2</span>Live results slides</h2><div class="fields one">' +
+        field("resEyebrow", "Small line above the heading") +
+        field("resTitle", "Heading on slide 2 (graph)") +
+        field("resTitle3", "Heading on slide 3 (graph with the guest arrow)") +
+        field("resMeta", "Small line on the right", "{count}, {avg} and {max} are filled in live.") + '</div>' +
+        '<p class="note">The arrow text ("Me at your age") is set in the Control room, under Guest. Your uploaded slides come after these three.</p></section>' +
+      '<section class="card h"><div class="row"><button class="b ghost danger" data-act="resetslides">Reset the slide wording</button></div>' +
+      '<p class="note">Changes save by themselves.</p></section>' +
+      '</div><aside class="pv"><p class="qno">Live slide preview</p><div class="slframe" id="slFrame"><div class="slcanvas"><div class="pres"><main class="pbody" id="slBody"></main>' +
+      '<footer class="pfoot"><i class="pline"></i><img class="logo" src="' + LOGO + '" alt=""></footer></div></div></div>' +
+      '<div class="pvnav"><button class="ib" data-sl="-1" aria-label="Previous slide">‹</button><span id="slPos"></span><button class="ib" data-sl="1" aria-label="Next slide">›</button></div></aside></div>';
+    updateSlidePreview();
+  }
+  function updateSlidePreview(){
+    const body = $("#slBody"), fr = $("#slFrame"); if (!body || !fr) return;
+    slStep = Math.max(0, Math.min(2, slStep));
+    const st = slStep === 0 ? { t:"qr" } : { t:"curve", hot: slStep === 2 };
+    body.innerHTML = stageMarkup(st);
+    const real = Object.values(players).map(scoreOf);
+    const scores = real.length ? real : sampleScores();
+    const n = scores.length, avg = n ? scores.reduce((a, b) => a + b, 0) / n : 0;
+    if (st.t === "qr"){
+      const box = body.querySelector("#qr");
+      if (typeof QRCode !== "undefined") new QRCode(box, { text: joinUrl, width: 280, height: 280, colorDark: "#3A3A3A", colorLight: "#FFFFFF", correctLevel: QRCode.CorrectLevel.M });
+      else box.textContent = "QR";
+      body.querySelector("#sCount").textContent = real.length || n;
+    } else {
+      body.querySelector("#sMeta").textContent = fillMeta(FORM.resMeta, n, avg);
+      body.querySelector("#sChart").innerHTML = chart(scores.concat([config.score]), { w:1000, h:520, fs:20, reserve:true, out: st.hot ? { score: config.score, label: config.label, hot: true } : null });
+    }
+    $("#slPos").textContent = (slStep + 1) + " of 3 · " + SL_NAMES[slStep];
+    const w = fr.getBoundingClientRect().width;
+    if (w > 0) fr.firstElementChild.style.transform = "scale(" + (w / 1280) + ")";
+  }
+
   /* ----- home ----- */
   function buildHome(){
     document.body.classList.remove("present");
@@ -801,7 +875,7 @@ function start(){
     $app.innerHTML =
       '<div class="home"><header class="hhead"><div class="hbrand"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos"><div><h1 class="ht">Host panel</h1><p class="note">PMC Live Quiz</p></div></div>' +
       '<button class="b bigbtn" id="bPresent"><span>Present</span><small id="presSub"></small></button></header>' +
-      '<nav class="tabs" role="tablist"><button class="tab" data-tab="control" role="tab">Control room</button><button class="tab" data-tab="quiz" role="tab">Quiz</button></nav>' +
+      '<nav class="tabs" role="tablist"><button class="tab" data-tab="control" role="tab">Control room</button><button class="tab" data-tab="quiz" role="tab">Quiz</button><button class="tab" data-tab="slides" role="tab">Slides</button></nav>' +
       '<div id="tabControl" class="tabpane">' +
       '<section class="ready" id="ready"></section>' +
       '<div class="hgrid">' +
@@ -825,8 +899,8 @@ function start(){
       '<section class="card h wide"><h2 class="ct">Participant link</h2><div class="linkrow"><div class="qrs" id="homeQr"></div>' +
         '<div style="min-width:0;flex:1"><p class="url">' + esc(joinUrl) + '</p><div class="row" style="margin-top:10px"><button class="b ghost" id="bCopy">Copy link</button></div>' +
         '<p class="note" style="margin-top:8px">Scan with your phone to try the quiz yourself.</p></div></div></section>' +
-      '</div></div><div id="tabQuiz" class="tabpane"></div></div>';
-    applyTab(); renderEditor();
+      '</div></div><div id="tabQuiz" class="tabpane"></div><div id="tabSlides" class="tabpane"></div></div>';
+    renderEditor(); renderSlides(); applyTab();
     $("#outScore").value = config.score;
     $("#outLabel").value = config.label;
     const q = document.getElementById("homeQr");
@@ -851,7 +925,8 @@ function start(){
     $("#outScore").max = MAX;
     const ed = $("#tabQuiz");
     if (ed){
-      if (JSON.stringify(FORM) !== editorKey && !ed.contains(document.activeElement)) renderEditor();
+      const es = $("#tabSlides");
+      if (JSON.stringify(FORM) !== editorKey && !ed.contains(document.activeElement) && !(es && es.contains(document.activeElement))){ renderEditor(); renderSlides(); }
       updateEditorMeta();
     }
     const clean = list.length === 0, noMock = mock === 0, ready = !!deck && noMock && clean;
@@ -900,21 +975,28 @@ function start(){
     idleTimer = setTimeout(() => nav.classList.add("idle"), 2500);
   }
 
+  const fillMeta = (tpl, count, avg) => String(tpl).replace(/\{count\}/g, count).replace(/\{avg\}/g, avg.toFixed(1)).replace(/\{max\}/g, MAX);
+  function stageMarkup(st){
+    if (st.t === "curve"){
+      return '<div class="res"><div class="restop"><div><p class="qno">' + esc(FORM.resEyebrow) + '</p><h1 class="hq sm">' + esc(st.hot ? FORM.resTitle3 : FORM.resTitle) + '</h1></div>' +
+        '<p class="meta" id="sMeta"></p></div><div class="chartbox" id="sChart"></div></div>';
+    }
+    return '<div class="lobby"><div class="lobtxt"><p class="qno">' + esc(FORM.qrEyebrow) + '</p>' +
+      '<h1 class="hq">' + esc(FORM.qrTitle.replace(/\{n\}/g, NTOT)) + '</h1>' + (FORM.qrSub ? '<p class="sub">' + esc(FORM.qrSub.replace(/\{n\}/g, NTOT)) + '</p>' : '') +
+      '<p class="big"><span id="sCount">0</span> <small>' + esc(FORM.qrCounter) + '</small></p></div><div class="qr" id="qr"></div></div>';
+  }
   function buildStage(st){
     const b = $("#pbody");
-    if (st.t === "curve"){
-      b.innerHTML = '<div class="res"><div class="restop"><div><p class="qno">Live scores</p><h1 class="hq sm">Where the room landed</h1></div>' +
-        '<p class="meta" id="sMeta"></p></div><div class="chartbox" id="sChart"></div></div>';
-    } else if (st.t === "img"){
+    if (st.t === "img"){
       const src = deckCache[st.i];
       b.innerHTML = src ? '<img class="slideimg" alt="" src="' + src + '">' : '<div class="ph"><p class="qno">Loading slide ' + (st.i + 1) + '</p></div>';
     } else {
-      b.innerHTML = '<div class="lobby"><div class="lobtxt"><p class="qno">Scan with your phone</p>' +
-        '<h1 class="hq">' + esc(FORM.qrTitle.replace(/\{n\}/g, NTOT)) + '</h1>' + (FORM.qrSub ? '<p class="sub">' + esc(FORM.qrSub) + '</p>' : '') +
-        '<p class="big"><span id="sCount">0</span> <small>have answered</small></p></div><div class="qr" id="qr"></div></div>';
-      const box = document.getElementById("qr");
-      if (typeof QRCode !== "undefined") new QRCode(box, { text: joinUrl, width: 340, height: 340, colorDark: "#3A3A3A", colorLight: "#FFFFFF", correctLevel: QRCode.CorrectLevel.M });
-      else box.textContent = joinUrl;
+      b.innerHTML = stageMarkup(st);
+      if (st.t === "qr"){
+        const box = document.getElementById("qr");
+        if (typeof QRCode !== "undefined") new QRCode(box, { text: joinUrl, width: 340, height: 340, colorDark: "#3A3A3A", colorLight: "#FFFFFF", correctLevel: QRCode.CorrectLevel.M });
+        else box.textContent = joinUrl;
+      }
     }
   }
 
@@ -935,7 +1017,7 @@ function start(){
     } else if (st.t === "curve"){
       const scores = list.map(scoreOf);
       const avg = n ? scores.reduce((a, b) => a + b, 0) / n : 0;
-      $("#sMeta").textContent = n + " answered · average " + avg.toFixed(1) + " of " + MAX;
+      $("#sMeta").textContent = fillMeta(FORM.resMeta, n, avg);
       $("#sChart").innerHTML = chart(scores.concat([config.score]), { w:1000, h:520, fs:20, reserve:true, out: st.hot ? { score: config.score, label: config.label, hot: true } : null });
     }
     $("#pPos").textContent = (step + 1) + " / " + steps.length;
@@ -986,6 +1068,8 @@ function start(){
     /* the preview follows whatever is being edited */
     $app.addEventListener("focusin", e => {
       const t = e.target; if (!t.dataset) return;
+      const sl = { qrEyebrow:0, qrTitle:0, qrSub:0, qrCounter:0, resEyebrow:1, resTitle:1, resMeta:1, resTitle3:2 }[t.dataset.f];
+      if (sl !== undefined){ slStep = sl; updateSlidePreview(); return; }
       if (t.dataset.f === "title" || t.dataset.f === "subtitle") pvStep = -1;
       else if (t.dataset.qt !== undefined) pvStep = pvIndexOf(+t.dataset.qt);
       else if (t.dataset.il !== undefined || t.dataset.f === "instrTitle" || t.dataset.f === "instrNote") pvStep = NQ;
@@ -1031,6 +1115,8 @@ function start(){
     $app.addEventListener("click", e => {
       const tb = e.target.closest("[data-tab]");
       if (tb){ homeTab = tb.dataset.tab; applyTab(); return; }
+      const slb = e.target.closest("[data-sl]");
+      if (slb){ slStep += +slb.dataset.sl; updateSlidePreview(); return; }
       const pvb = e.target.closest("[data-pv]");
       if (pvb){ pvStep += +pvb.dataset.pv; updatePreview(); return; }
       const b = e.target.closest("[data-act]"); if (!b) return;
@@ -1047,6 +1133,10 @@ function start(){
       }
       else if (act === "addq"){ FORM.questions.push({ id:newId("q"), text:"" }); commitForm(true); const a = document.querySelectorAll("[data-qt]"); if (a.length) a[a.length-1].focus(); }
       else if (act === "addi"){ FORM.instruments.push({ id:newId("i"), label:"" }); commitForm(true); const a = document.querySelectorAll("[data-il]"); if (a.length) a[a.length-1].focus(); }
+      else if (act === "resetslides") twoClick(b, "Reset the slide wording", () => {
+        ["qrTitle","qrSub","qrEyebrow","qrCounter","resEyebrow","resTitle","resTitle3","resMeta"].forEach(k => { FORM[k] = DEFAULT_FORM[k]; });
+        commitForm(true);
+      });
       else if (act === "reset") twoClick(b, "Reset to the original questions", () => { FORM = normalizeForm(null); commitForm(true); });
     });
     $app.addEventListener("dragover", e => { const d = e.target.closest("#drop"); if (d){ e.preventDefault(); d.classList.add("over"); } });
@@ -1057,6 +1147,7 @@ function start(){
       const f = e.dataTransfer && e.dataTransfer.files[0]; if (f) uploadDeck(f);
     });
     document.addEventListener("mousemove", () => { if (mode === "present") bumpNav(); });
+    window.addEventListener("resize", () => { if (mode === "home" && homeTab === "slides") updateSlidePreview(); });
     document.addEventListener("keydown", e => {
       if (mode !== "present") return;
       const k = e.key;
