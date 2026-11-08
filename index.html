@@ -559,7 +559,7 @@ function start(){
     $app.innerHTML = '<div class="p' + (first ? ' enter' : '') + '"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos">' +
       '<div class="card hero"><p class="qno">Your return</p><div class="score"><span id="scoreNum">+' + pct + '</span><small>%</small></div>' +
       '<p class="exp">' + s + ' of ' + MAX + ' experiences</p>' +
-      '<p class="alpha ' + (alpha >= 0 ? 'up' : 'down') + '">Alpha: ' + (alpha >= 0 ? '+' : '\u2212') + Math.abs(alpha) + ' pts vs the benchmark</p><p class="rank">' + rank + '</p>' +
+      '<p class="rank">' + rank + '</p>' +
       '<div class="mini"><div><b>+' + bpct + '%</b><span>Benchmark</span></div><div><b>' + all.length + '</b><span>Answers so far</span></div></div></div>' +
       '<div class="card"><p class="qno">The room, live</p>' + chart(o ? all.concat([o.score]) : all, { w:360, h:250, fs:11, you:s, out: o ? { score:o.score, label:o.label, hot:true, alt:true } : null }) +
       '<p class="legend"><span><i class="sw"></i>You</span>' + (o ? '<span><i class="sw navy"></i>Our guest, ' + o.score + ' points</span>' : '') + '</p></div>' +
