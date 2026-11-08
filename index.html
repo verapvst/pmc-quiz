@@ -36,9 +36,8 @@ button{cursor:pointer}
 :focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 
 .brand{display:flex;align-items:center;gap:12px;font:700 .9rem var(--display);color:var(--muted)}
-.logo{height:72px;width:auto;display:block}
-body.host .logo{height:96px}
-body.display-only .logo{height:80px}
+.logo{height:52px;width:auto;display:block}
+body.host .logo{height:64px}
 .dot{width:14px;height:14px;border-radius:50%;background:var(--orange);display:inline-block}
 .prog{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
 .prog>i{display:block;height:100%;background:var(--orange);border-radius:3px;transition:width .35s ease}
@@ -47,31 +46,53 @@ body.display-only .logo{height:80px}
 svg{display:block;width:100%;height:auto}
 
 /* phone */
-.p{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:16px;min-height:calc(100svh - 32px)}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+body:not(.host){padding-block:0}
+.p{max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:14px;min-height:100svh;padding:16px 0 28px}
+.p.form{padding-top:0}
+.ptop{position:sticky;top:0;z-index:5;margin:0 -16px;padding:max(10px,env(safe-area-inset-top,0px)) 16px 10px;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pcount{font:700 .85rem var(--body);color:var(--muted);font-variant-numeric:tabular-nums}
+.intro{display:flex;flex-direction:column;gap:6px;padding:6px 2px 2px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.p>.logo{align-self:flex-start}
+.card.q{scroll-margin-top:104px;transition:border-color .25s,background .25s}
+.card.q.done{border-color:#F7CDB0;background:#FFFBF8}
+.qhead{display:flex;justify-content:space-between;align-items:center}
+.okmark{width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-size:.8rem;font-weight:700;opacity:0;transform:scale(.6);transition:opacity .2s,transform .2s}
+.card.q.done .okmark{opacity:1;transform:none}
 .title{margin:0;font:700 1.45rem/1.15 var(--display);text-transform:uppercase;color:var(--orange);text-wrap:balance}
-.qtext{margin:0;font:800 1.3rem/1.2 var(--display);text-wrap:balance}
+.qtext{margin:0;font:700 1.2rem/1.28 var(--display);text-wrap:balance}
 .note{margin:0;color:var(--muted);font-size:.95rem}
 .yn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.pill{height:52px;border:2px solid var(--line);border-radius:12px;background:var(--panel);font-weight:700;transition:background .12s,color .12s}
-.pill:active{transform:scale(.98)}
+.pill{height:58px;border:2px solid var(--line);border-radius:14px;background:var(--panel);font-weight:700;font-size:1.05rem;transition:background .12s,color .12s,border-color .12s,transform .08s}
+.pill:active{transform:scale(.97)}
 .pill.yes[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:#fff}
-.pill.no[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.pill.no[aria-pressed="true"]{background:#4A4A4A;border-color:#4A4A4A;color:#fff}
 .chips{display:flex;flex-direction:column;gap:10px}
-.chip{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;padding:0 16px;background:var(--panel);border:2px solid var(--line);border-radius:12px;font-weight:600;text-align:left}
-.chip b{font:800 1rem var(--display);color:var(--muted)}
+.chip{display:flex;align-items:center;gap:14px;min-height:58px;padding:0 16px;background:var(--panel);border:2px solid var(--line);border-radius:14px;font-weight:600;text-align:left;transition:background .12s,border-color .12s}
+.chip .box{flex:none;width:24px;height:24px;border:2px solid #C8C2BC;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:.85rem;font-weight:700}
+.chip .cl{flex:1}
+.chip b{font:700 .95rem var(--display);color:var(--orange-d)}
 .chip[aria-pressed="true"]{border-color:var(--orange);background:var(--tint)}
-.chip[aria-pressed="true"] b{color:var(--orange-d)}
-.submitbar{position:sticky;bottom:0;margin-top:auto;padding:14px 0 max(4px,env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--bg) 75%,rgba(255,255,255,0));display:flex;flex-direction:column;gap:8px}
-.go{height:58px;border:0;border-radius:12px;background:var(--orange);color:#fff;font:800 1.15rem var(--display)}
-.go:disabled{background:var(--line);color:var(--muted);cursor:default}
-.hint{margin:0;text-align:center;color:var(--muted);font-size:.9rem}
-.score{font:800 6rem/1 var(--display);color:var(--orange);font-variant-numeric:tabular-nums}
-.score small{font:700 1.6rem var(--display);color:var(--muted)}
+.chip[aria-pressed="true"] .box{background:var(--orange);border-color:var(--orange)}
+.chip[aria-pressed="true"] .box::after{content:"\2713"}
+.submitbar{position:sticky;bottom:0;margin:auto -16px -28px;padding:12px 16px max(14px,env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.97);border-top:1px solid var(--line)}
+.go{width:100%;height:58px;border:0;border-radius:14px;background:var(--orange);color:#fff;font:700 1.1rem var(--display);transition:background .2s}
+.go:disabled{background:#ECE7E2;color:#8A847E;cursor:default}
+.hero{align-items:center;text-align:center;gap:10px}
+.score{display:flex;align-items:baseline;justify-content:center;gap:8px;font:800 6rem/1 var(--display);color:var(--orange);font-variant-numeric:tabular-nums}
+.score small{font:700 1.5rem var(--display);color:var(--muted)}
+.meter{width:100%;height:10px;border-radius:5px;background:#EFEAE5;overflow:hidden}
+.meter>i{display:block;height:100%;background:var(--orange);border-radius:5px;transition:width .8s ease}
 .rank{margin:0;font-weight:600}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.mini div{background:#F8F5F2;border-radius:12px;padding:10px 8px}
+.mini b{display:block;font:700 1.35rem var(--display);font-variant-numeric:tabular-nums}
+.mini span{font-size:.8rem;color:var(--muted)}
 .legend{margin:0;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.9rem;color:var(--muted)}
 .sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:var(--orange)}
 .sw.ink{background:var(--ink)}
+.sw.navy{background:var(--navy)}
 .foot{font-size:.85rem;color:var(--muted);text-align:center}
 
 /* chart */
@@ -88,34 +109,62 @@ svg{display:block;width:100%;height:auto}
 /* host */
 .b{height:44px;padding:0 20px;border:0;border-radius:10px;background:var(--orange);color:#fff;font-weight:700}
 .b.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.b.ghost:hover{background:#FAF7F4}
 .b.ghost.light{color:#fff;border-color:rgba(255,255,255,.4)}
-.b.danger{color:var(--orange-d)}
-.b.bigbtn{height:56px;padding:0 36px;font-size:1.1rem}
+.b.danger{color:#B83A00;border-color:#F3C9B3}
+.b.bigbtn{height:60px;padding:0 32px;font-size:1.1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15}
+.b.bigbtn small{font-size:.7rem;font-weight:600;opacity:.9}
 .b:disabled{opacity:.35;cursor:default}
-.filebtn{display:inline-flex;align-items:center;cursor:pointer}
-.home{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.home{max-width:1120px;margin:0 auto;padding:8px 0 40px;display:flex;flex-direction:column;gap:18px}
 .hhead{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:18px}
+.hbrand{display:flex;align-items:center;gap:18px}
+.ht{margin:0;font:700 1.6rem/1.1 var(--display);text-transform:uppercase;color:var(--orange)}
+.ready{display:flex;gap:16px;align-items:flex-start;padding:16px 20px;border-radius:16px;border:1px solid var(--line);background:#FAF7F4}
+.ready.ok{background:#EFF8F1;border-color:#BFE0C8}
+.ready.warn{background:#FFF6EC;border-color:#F6D2AE}
+.ready .ri{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;background:#B9B2AB}
+.ready.ok .ri{background:#2E9E57}
+.ready.warn .ri{background:var(--orange)}
+.ready h3{margin:0 0 6px;font:700 1rem var(--display)}
+.checks{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:.92rem}
+.checks li{display:flex;gap:8px;align-items:baseline}
+.checks .c{font-weight:700;width:16px;flex:none;text-align:center}
+.checks .yes{color:#2E9E57}.checks .no{color:var(--orange-d)}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px;align-items:stretch}
 .hgrid .wide{grid-column:1/-1}
-h2.ct{margin:0;font:700 1rem var(--display);text-transform:uppercase;color:var(--orange)}
+.card.h{gap:12px}
+h2.ct{margin:0;display:flex;align-items:center;gap:10px;font:700 .98rem var(--display);text-transform:uppercase;color:var(--ink)}
+.step{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;font:700 .85rem var(--body)}
+.step.alt{background:#B9B2AB}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .stats{display:flex;gap:28px;flex-wrap:wrap}
-.stat{font:700 2.4rem/1 var(--display);font-variant-numeric:tabular-nums}
+.stat{font:700 2.2rem/1 var(--display);font-variant-numeric:tabular-nums}
 .stat.soft{color:var(--muted)}
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;padding:22px 16px;border:2px dashed #D9D2CB;border-radius:14px;cursor:pointer;color:var(--muted);font-size:.92rem;transition:background .15s,border-color .15s}
+.drop:hover,.drop.over{background:var(--tint);border-color:var(--orange)}
+.drop b{color:var(--ink);font-size:1rem}
+.dstat{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.95rem}
+.dstat .dot2{width:10px;height:10px;border-radius:50%;background:#2E9E57;flex:none}
+.dstat.none .dot2{background:#B9B2AB}
 .field{display:flex;flex-direction:column;gap:6px;font-size:.85rem;color:var(--muted);font-weight:700}
-.field input{height:44px;border:1px solid var(--line);border-radius:8px;padding:0 12px;font:inherit;color:var(--ink);background:var(--bg);max-width:100%}
+.field input{height:46px;border:1px solid var(--line);border-radius:10px;padding:0 12px;font:inherit;color:var(--ink);background:var(--bg);max-width:100%}
+.field input:focus{outline:2px solid var(--orange);outline-offset:1px;border-color:var(--orange)}
+.fields{display:grid;grid-template-columns:110px 1fr;gap:12px}
 .prev svg{width:100%;height:auto;display:block}
+.linkrow{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.linkrow .qrs{background:#fff;padding:8px;border:1px solid var(--line);border-radius:12px;line-height:0}
 .url{margin:0;font:600 clamp(1rem,2vw,1.6rem) var(--body);word-break:break-all;color:var(--orange-d)}
 .meta{margin:0;font-size:1.1rem;font-weight:600;color:var(--muted)}
 /* present */
 body.present{padding:0;height:100svh;overflow:hidden}
 .pres{height:100svh;max-width:1700px;margin:0 auto;display:flex;flex-direction:column;gap:12px;padding:18px 36px 14px}
-.pres .logo{height:64px}
+.pres .logo{height:72px}
 .phead{flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .pbody{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;min-width:0}
-.pfoot{flex:none;height:3px;background:linear-gradient(90deg,var(--orange),rgba(255,102,0,0))}
+.pfoot{flex:none;display:flex;align-items:flex-end;gap:20px}
+.pline{flex:1;height:3px;margin-bottom:10px;background:linear-gradient(90deg,var(--orange),rgba(255,102,0,0))}
 .pres.img{padding:0;gap:0;max-width:none}
-.pres.img .phead,.pres.img .pfoot{display:none}
+.pres.img .pfoot{display:none}
 .slideimg{display:block;width:100%;height:100%;object-fit:contain}
 .ph{display:flex;align-items:center;justify-content:center;height:100%}
 .hq{margin:0;font:700 clamp(1.7rem,3.6vw,3.2rem)/1.12 var(--display);text-transform:uppercase;color:var(--orange);text-wrap:balance;max-width:22ch;border-left:8px solid var(--orange);padding-left:18px}
@@ -132,7 +181,7 @@ body.present{padding:0;height:100svh;overflow:hidden}
 .restop{flex:none;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
 .chartbox{flex:1;min-height:0;display:flex}
 .chartbox svg{width:100%;height:100%}
-.pnav{position:fixed;right:20px;bottom:20px;z-index:10;display:flex;gap:10px;align-items:center;padding:8px 12px;background:rgba(58,58,58,.9);color:#fff;border-radius:999px;transition:opacity .3s}
+.pnav{position:fixed;left:20px;bottom:20px;z-index:10;display:flex;gap:10px;align-items:center;padding:8px 12px;background:rgba(58,58,58,.9);color:#fff;border-radius:999px;transition:opacity .3s}
 .pnav.idle{opacity:0}
 .pnav .b{height:38px;padding:0 16px}
 .pager{min-width:70px;text-align:center;font-weight:700}
@@ -168,18 +217,18 @@ const HOST_PIN = "bpi";   // presenter page is yourlink/?host=bpi
 <div id="app"><div class="p"><div class="brand">PMC Live Quiz</div><p class="note">Loading</p></div></div>
 <script>
 const QUESTIONS = [
-  "Who studied in a private school during high school?",
-  "Who travelled abroad before the age of 18?",
-  "Who has had a grade above 14 out of 20 in the undergrad?",
-  "Who has had or expects a grade above 14 out of 20 in the Masters?",
-  "Who has done at least one internship?",
-  "Who knows what the CFA is?",
-  "Who is taking the CFA?",
-  "Who got an offer from a top consulting or international investment banking or asset management firm?",
-  "Who has visited more than two countries?",
-  "Who has been to more than one continent?",
-  "Who has lived abroad for more than 3 months?",
-  "Who has invested already?"
+  "Have you studied in a private school during high school?",
+  "Have you travelled abroad before the age of 18?",
+  "Have you had a grade above 14 out of 20 in your undergrad?",
+  "Have you had, or do you expect, a grade above 14 out of 20 in your Master's?",
+  "Have you done at least one internship?",
+  "Do you know what the CFA is?",
+  "Are you taking the CFA?",
+  "Have you received an offer from a top consulting, investment banking or asset management firm?",
+  "Have you visited more than two countries?",
+  "Have you been to more than one continent?",
+  "Have you lived abroad for more than 3 months?",
+  "Have you invested already?"
 ];
 const INSTRUMENTS = [["stocks","Stocks"],["funds","Funds"],["ppr","PPR / retirement plan"],["crypto","Crypto"],["bonds","Bonds"]];
 const NQ = QUESTIONS.length;            // 12 yes/no questions
@@ -241,7 +290,7 @@ function chart(scores, o){
   s += '<path class="line" d="M' + pts.join(' L') + '"/>';
   s += '<line class="axis" x1="' + pad.l + '" x2="' + (w-pad.r) + '" y1="' + f(base) + '" y2="' + f(base) + '"/>';
   for (let k = 0; k < n; k++){
-    if (big || k % 2 === 0 || k === MAX) s += '<text class="tick' + (k === you ? ' you' : '') + '" x="' + f(X(k)) + '" y="' + f(base+fs*1.5) + '" font-size="' + fs + '" text-anchor="middle">' + k + '</text>';
+    if (big || k % 3 === 0) s += '<text class="tick' + (k === you ? ' you' : '') + '" x="' + f(X(k)) + '" y="' + f(base+fs*1.5) + '" font-size="' + fs + '" text-anchor="middle">' + k + '</text>';
   }
   if (you !== null && you >= 0 && you <= MAX){
     const by = base - (c[you]/ymax)*ih;
@@ -303,20 +352,24 @@ function start(){
   const saveDraft = () => ls.set("pmcq_draft", JSON.stringify(draft));
 
   function renderForm(){
-    $app.innerHTML = '<div class="p"><div class="brand"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos">PMC Live Quiz</div>' +
-      '<div class="card"><h1 class="title">13 quick questions</h1>' +
-      '<p class="note">Takes 2 to 3 minutes. Fully anonymous. You see your own score at the end, and the whole room appears on the main screen.</p></div>' +
+    $app.innerHTML = '<div class="p form"><header class="ptop"><div class="prow"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos"><span class="pcount" id="pcount"></span></div>' +
+      '<div class="prog"><i id="pbar" style="width:0%"></i></div></header>' +
+      '<div class="intro"><h1 class="title">' + (NQ+1) + ' quick questions</h1>' +
+      '<p class="note">About 2 minutes. Anonymous. You get your own score and see how the room compares.</p></div>' +
       QUESTIONS.map((t, q) =>
-        '<section class="card"><p class="qno">' + (q+1) + ' of ' + (NQ+1) + '</p><h2 class="qtext">' + esc(t) + '</h2>' +
+        '<section class="card q" id="qc' + q + '"><div class="qhead"><p class="qno">Question ' + (q+1) + ' of ' + (NQ+1) + '</p><span class="okmark" aria-hidden="true">✓</span></div><h2 class="qtext">' + esc(t) + '</h2>' +
         '<div class="yn"><button class="pill yes" data-q="' + q + '" data-v="1" aria-pressed="false">Yes</button>' +
         '<button class="pill no" data-q="' + q + '" data-v="0" aria-pressed="false">No</button></div></section>').join("") +
-      '<section class="card"><p class="qno">' + (NQ+1) + ' of ' + (NQ+1) + '</p><h2 class="qtext">Which of these have you invested in?</h2>' +
-      '<p class="note">Each one you tick is worth 1 point.</p><div class="chips">' +
-      INSTRUMENTS.map(([k, l]) => '<button class="chip" data-i="' + k + '" aria-pressed="false"><span>' + esc(l) + '</span><b></b></button>').join("") +
+      '<section class="card q" id="qci"><div class="qhead"><p class="qno">Question ' + (NQ+1) + ' of ' + (NQ+1) + '</p></div><h2 class="qtext">Which of these have you invested in?</h2>' +
+      '<p class="note">Tick all that apply. Each one is worth 1 point. Skip if none.</p><div class="chips">' +
+      INSTRUMENTS.map(([k, l]) => '<button class="chip" data-i="' + k + '" aria-pressed="false"><span class="box"></span><span class="cl">' + esc(l) + '</span><b></b></button>').join("") +
       '</div></section>' +
-      '<div class="submitbar"><p class="hint" id="hint"></p><button class="go" id="submitBtn" disabled>See my score</button></div></div>';
+      '<div class="submitbar"><button class="go" id="submitBtn" disabled>See my score</button></div></div>';
     paintForm();
   }
+
+  function answered(q){ return draft.a["q"+q] === 0 || draft.a["q"+q] === 1; }
+  function firstOpen(){ for (let q = 0; q < NQ; q++) if (!answered(q)) return q; return -1; }
 
   function paintForm(){
     document.querySelectorAll("[data-q]").forEach(b => {
@@ -328,10 +381,27 @@ function start(){
       b.lastElementChild.textContent = on ? "+1" : "";
     });
     let done = 0;
-    for (let q = 0; q < NQ; q++) if (draft.a["q"+q] === 0 || draft.a["q"+q] === 1) done++;
-    const btn = document.getElementById("submitBtn"), hint = document.getElementById("hint");
-    if (btn) btn.disabled = done < NQ;
-    if (hint) hint.textContent = done < NQ ? done + ' of ' + NQ + ' answered. Answer every yes or no question to continue.' : 'All set. The last question is optional.';
+    for (let q = 0; q < NQ; q++){
+      const ok = answered(q);
+      if (ok) done++;
+      const c = document.getElementById("qc" + q);
+      if (c) c.classList.toggle("done", ok);
+    }
+    const btn = document.getElementById("submitBtn");
+    const cnt = document.getElementById("pcount"), bar = document.getElementById("pbar");
+    if (btn){
+      btn.disabled = done < NQ;
+      btn.textContent = done < NQ ? "Answer " + (NQ - done) + " more to continue" : "See my score";
+    }
+    if (cnt) cnt.textContent = done + " of " + NQ + " answered";
+    if (bar) bar.style.width = Math.round(done / NQ * 100) + "%";
+  }
+
+  function scrollToCard(id){
+    const el = document.getElementById(id);
+    if (!el) return;
+    const calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
   }
 
   function submit(){
@@ -345,18 +415,27 @@ function start(){
     draft = { a:{}, i:{} }; saveDraft();
   }
 
-  function renderResults(me, all){
+  function renderResults(me, all, first){
     const id = myId();
     const s = scoreOf(me);
     const others = Object.entries(players).filter(([k]) => k !== id).map(([, p]) => scoreOf(p));
     const lower = others.filter(x => x < s).length;
     const rank = others.length ? 'You scored higher than ' + Math.round(lower/others.length*100) + '% of the room so far.' : 'You are the first one in. Others are still answering.';
     const o = state.outlier;
-    $app.innerHTML = '<div class="p"><div class="brand"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos">PMC Live Quiz</div><div class="prog"><i style="width:100%"></i></div>' +
-      '<div class="card" style="align-items:center;text-align:center"><p class="qno">Your score</p><div class="score">' + s + '<small> / ' + MAX + '</small></div><p class="rank">' + rank + '</p></div>' +
-      '<div class="card"><p class="qno">The whole room, live (' + all.length + ' so far)</p>' + chart(o ? all.concat([o.score]) : all, { w:360, h:250, fs:11, you:s, out: o ? { score:o.score, label:o.label, hot:true, alt:true } : null }) +
+    const avg = all.length ? all.reduce((a, b) => a + b, 0) / all.length : 0;
+    $app.innerHTML = '<div class="p"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos">' +
+      '<div class="card hero"><p class="qno">Your score</p><div class="score"><span id="scoreNum">' + s + '</span><small>/ ' + MAX + '</small></div>' +
+      '<div class="meter"><i style="width:' + Math.round(s/MAX*100) + '%"></i></div><p class="rank">' + rank + '</p>' +
+      '<div class="mini"><div><b>' + avg.toFixed(1) + '</b><span>Room average</span></div><div><b>' + all.length + '</b><span>Answers so far</span></div></div></div>' +
+      '<div class="card"><p class="qno">The room, live</p>' + chart(o ? all.concat([o.score]) : all, { w:360, h:250, fs:11, you:s, out: o ? { score:o.score, label:o.label, hot:true, alt:true } : null }) +
       '<p class="legend"><span><i class="sw"></i>You</span>' + (o ? '<span><i class="sw navy"></i>Our guest, ' + o.score + ' points</span>' : '') + '</p></div>' +
       '<p class="foot">Keep this page open and watch the main screen.</p></div>';
+    const calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (first && !calm){
+      const el = document.getElementById("scoreNum"), t0 = performance.now();
+      const tick = t => { const k = Math.min(1, (t - t0) / 700); el.textContent = Math.round(s * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); };
+      el.textContent = "0"; requestAnimationFrame(tick);
+    }
   }
 
   function drawPlayer(){
@@ -369,14 +448,24 @@ function start(){
     const all = Object.values(players).map(scoreOf);
     const key = JSON.stringify([all.slice().sort().join(","), state.outlier || 0, scoreOf(me)]);
     if (view === "results" && key === lastKey) return;
+    const first = view !== "results";
     view = "results"; lastKey = key;
-    renderResults(me, all);
+    renderResults(me, all, first);
   }
 
   $app.addEventListener("click", e => {
     if (isHost) return;
     const yn = e.target.closest("[data-q]");
-    if (yn){ draft.a["q" + yn.dataset.q] = parseInt(yn.dataset.v, 10); saveDraft(); paintForm(); return; }
+    if (yn){
+      const q = parseInt(yn.dataset.q, 10);
+      const wasNext = firstOpen() === q;
+      draft.a["q" + q] = parseInt(yn.dataset.v, 10); saveDraft(); paintForm();
+      if (wasNext){
+        const nx = firstOpen();
+        setTimeout(() => scrollToCard(nx === -1 ? "qci" : "qc" + nx), 260);
+      }
+      return;
+    }
     const ch = e.target.closest("[data-i]");
     if (ch){ draft.i[ch.dataset.i] = !draft.i[ch.dataset.i]; saveDraft(); paintForm(); return; }
     if (e.target.closest("#submitBtn")) submit();
@@ -496,32 +585,37 @@ function start(){
     document.body.classList.remove("present");
     document.body.classList.add("host");
     $app.innerHTML =
-      '<div class="home"><header class="hhead"><div class="brand"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos">Control room</div>' +
-      '<button class="b bigbtn" id="bPresent">Present</button></header>' +
-      '<p class="note" id="presInfo"></p>' +
+      '<div class="home"><header class="hhead"><div class="hbrand"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos"><div><h1 class="ht">Control room</h1><p class="note">PMC Live Quiz</p></div></div>' +
+      '<button class="b bigbtn" id="bPresent"><span>Present</span><small id="presSub"></small></button></header>' +
+      '<section class="ready" id="ready"></section>' +
       '<div class="hgrid">' +
-      '<section class="card"><h2 class="ct">Answers</h2>' +
-        '<div class="stats"><div><div class="stat" id="hReal">0</div><div class="note">real answers</div></div>' +
-        '<div><div class="stat soft" id="hMock">0</div><div class="note">mock answers</div></div>' +
+      '<section class="card h"><h2 class="ct"><span class="step">1</span>Presentation</h2>' +
+        '<div class="dstat none" id="deckStatus"><i class="dot2"></i><span></span></div>' +
+        '<label class="drop" id="drop"><b>Drop a PDF here</b><span>or click to choose a file</span><input type="file" id="deckFile" accept=".pdf,.ppt,.pptx,application/pdf" hidden></label>' +
+        '<div class="prog"><i id="deckBar" style="width:0%"></i></div><p class="note" id="deckMsg">From PowerPoint: File, Export, PDF. Animations and videos will not play.</p>' +
+        '<div class="row"><button class="b ghost danger" id="bRmDeck">Remove presentation</button></div></section>' +
+      '<section class="card h"><h2 class="ct"><span class="step">2</span>Guest</h2>' +
+        '<div class="fields"><label class="field">Score<input type="number" id="outScore" min="0" max="' + MAX + '"></label>' +
+        '<label class="field">Arrow label<input type="text" id="outLabel"></label></div>' +
+        '<p class="note">Your father is counted in the graph from the start. On the last results screen an arrow and an orange segment point to his score.</p></section>' +
+      '<section class="card h"><h2 class="ct"><span class="step">3</span>Test with mock answers</h2>' +
+        '<div class="stats"><div><div class="stat" id="hReal">0</div><div class="note">real</div></div>' +
+        '<div><div class="stat soft" id="hMock">0</div><div class="note">mock</div></div>' +
         '<div><div class="stat" id="hAvg">0</div><div class="note">average score</div></div></div>' +
-        '<div class="row"><button class="b ghost" id="bSim">Add 50 mock answers</button><button class="b ghost" id="bUnsim">Remove mock answers</button></div>' +
-        '<div class="row"><button class="b ghost danger" id="bReset">Restart quiz</button></div>' +
-        '<p class="note">Restart deletes every answer, real and mock, so the room starts at zero. The uploaded presentation and the guest score stay.</p></section>' +
-      '<section class="card"><h2 class="ct">Presentation</h2><p id="deckStatus" class="note"></p>' +
-        '<div class="row"><label class="b ghost filebtn">Upload PDF<input type="file" id="deckFile" accept=".pdf,.ppt,.pptx,application/pdf" hidden></label>' +
-        '<button class="b ghost danger" id="bRmDeck">Remove presentation</button></div>' +
-        '<div class="prog"><i id="deckBar" style="width:0%"></i></div><p class="note" id="deckMsg"></p>' +
-        '<p class="note">PDF works directly. From PowerPoint: File, Export, PDF.</p></section>' +
-      '<section class="card"><h2 class="ct">Guest outlier</h2>' +
-        '<label class="field">Score<input type="number" id="outScore" min="0" max="' + MAX + '"></label>' +
-        '<label class="field">Label<input type="text" id="outLabel"></label>' +
-        '<p class="note">Shown as an orange bar with an arrow and this label, on the last results screen.</p></section>' +
-      '<section class="card"><h2 class="ct">Participant link</h2><p class="url">' + esc(joinUrl) + '</p>' +
-        '<div class="row"><button class="b ghost" id="bCopy">Copy link</button></div></section>' +
-      '<section class="card wide"><h2 class="ct">Live preview</h2><div id="prevChart" class="prev"></div></section>' +
+        '<div class="row"><button class="b ghost" id="bSim">Add 50 mock answers</button><button class="b ghost" id="bUnsim">Remove mock answers</button></div></section>' +
+      '<section class="card h"><h2 class="ct"><span class="step alt">4</span>On the day</h2>' +
+        '<p class="note">Before the event, restart the quiz. This deletes every answer, real and mock, so the room starts at zero. The presentation and the guest score stay.</p>' +
+        '<div class="row"><button class="b ghost danger" id="bReset">Restart quiz</button></div></section>' +
+      '<section class="card h wide"><h2 class="ct">Live preview</h2><div id="prevChart" class="prev"></div></section>' +
+      '<section class="card h wide"><h2 class="ct">Participant link</h2><div class="linkrow"><div class="qrs" id="homeQr"></div>' +
+        '<div style="min-width:0;flex:1"><p class="url">' + esc(joinUrl) + '</p><div class="row" style="margin-top:10px"><button class="b ghost" id="bCopy">Copy link</button></div>' +
+        '<p class="note" style="margin-top:8px">Scan with your phone to try the quiz yourself.</p></div></div></section>' +
       '</div></div>';
     $("#outScore").value = config.score;
     $("#outLabel").value = config.label;
+    const q = document.getElementById("homeQr");
+    if (typeof QRCode !== "undefined") new QRCode(q, { text: joinUrl, width: 120, height: 120, colorDark: "#3A3A3A", colorLight: "#FFFFFF", correctLevel: QRCode.CorrectLevel.M });
+    else q.style.display = "none";
   }
 
   function updateHome(){
@@ -530,13 +624,24 @@ function start(){
     const scores = list.map(([, p]) => scoreOf(p));
     const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
     $("#hReal").textContent = real; $("#hMock").textContent = mock; $("#hAvg").textContent = avg.toFixed(1);
-    $("#deckStatus").textContent = deck ? deck.name + ", " + deck.count + " slides" : "No presentation uploaded yet.";
-    const parts = ["QR code", "live results", "live results with the guest arrow"];
+    const ds = $("#deckStatus");
+    ds.classList.toggle("none", !deck);
+    ds.lastElementChild.textContent = deck ? deck.name + ", " + deck.count + " slides" : "No presentation uploaded yet";
+    const parts = ["QR code", "live results", "guest arrow"];
     if (deck) parts.push(deck.count + " slides");
-    $("#presInfo").textContent = "Present plays: " + parts.join(", then ") + ".";
+    $("#presSub").textContent = parts.join(" → ");
     if (document.activeElement !== $("#outScore")) $("#outScore").value = config.score;
     if (document.activeElement !== $("#outLabel")) $("#outLabel").value = config.label;
     $("#prevChart").innerHTML = chart(scores.concat([config.score]), { w:900, h:340, fs:15, reserve:true, out: { score: config.score, label: config.label, hot: true } });
+    const clean = list.length === 0;
+    const rd = $("#ready");
+    rd.className = "ready " + (deck && clean ? "ok" : "warn");
+    rd.innerHTML = '<div class="ri">' + (deck && clean ? "✓" : "!") + '</div><div><h3>' +
+      (deck && clean ? "Ready for the day" : (clean ? "Almost ready" : "Test mode")) + '</h3><ul class="checks">' +
+      '<li><span class="c ' + (deck ? "yes" : "no") + '">' + (deck ? "✓" : "•") + '</span>' + (deck ? "Presentation uploaded" : "Presentation not uploaded yet") + '</li>' +
+      '<li><span class="c yes">✓</span>Guest score set to ' + config.score + '</li>' +
+      '<li><span class="c ' + (clean ? "yes" : "no") + '">' + (clean ? "✓" : "•") + '</span>' + (clean ? "Quiz is clean, 0 answers" : list.length + " answers in the database (" + mock + " mock). Restart the quiz before the event.") + '</li>' +
+      '</ul></div>';
   }
 
   function startPresent(){
@@ -561,8 +666,8 @@ function start(){
   function buildPresent(){
     document.body.classList.add("host", "present");
     $app.innerHTML =
-      '<div class="pres" id="pres"><header class="phead"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos"></header>' +
-      '<main class="pbody" id="pbody"></main><div class="pfoot"></div></div>' +
+      '<div class="pres" id="pres"><main class="pbody" id="pbody"></main>' +
+      '<footer class="pfoot"><i class="pline"></i><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos"></footer></div>' +
       '<div class="pnav" id="pnav"><button class="b ghost light" id="pPrev">←</button><span class="pager" id="pPos"></span><button class="b" id="pNext">→</button><button class="b ghost light" id="pExit">Exit</button></div>';
     bumpNav();
   }
@@ -650,6 +755,13 @@ function start(){
       else if (e.target.id === "outScore" || e.target.id === "outLabel"){
         configRef.set({ score: clampScore($("#outScore").value), label: ($("#outLabel").value || "").trim() || DEFAULT_LABEL });
       }
+    });
+    $app.addEventListener("dragover", e => { const d = e.target.closest("#drop"); if (d){ e.preventDefault(); d.classList.add("over"); } });
+    $app.addEventListener("dragleave", e => { const d = e.target.closest("#drop"); if (d) d.classList.remove("over"); });
+    $app.addEventListener("drop", e => {
+      const d = e.target.closest("#drop"); if (!d) return;
+      e.preventDefault(); d.classList.remove("over");
+      const f = e.dataTransfer && e.dataTransfer.files[0]; if (f) uploadDeck(f);
     });
     document.addEventListener("mousemove", () => { if (mode === "present") bumpNav(); });
     document.addEventListener("keydown", e => {
