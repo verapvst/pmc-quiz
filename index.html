@@ -633,14 +633,14 @@ function start(){
     if (document.activeElement !== $("#outScore")) $("#outScore").value = config.score;
     if (document.activeElement !== $("#outLabel")) $("#outLabel").value = config.label;
     $("#prevChart").innerHTML = chart(scores.concat([config.score]), { w:900, h:340, fs:15, reserve:true, out: { score: config.score, label: config.label, hot: true } });
-    const clean = list.length === 0;
+    const clean = list.length === 0, noMock = mock === 0, ready = !!deck && noMock && clean;
+    const item = (ok, good, todo) => '<li><span class="c ' + (ok ? "yes" : "no") + '">' + (ok ? "\u2713" : "\u2022") + '</span>' + (ok ? good : todo) + '</li>';
     const rd = $("#ready");
-    rd.className = "ready " + (deck && clean ? "ok" : "warn");
-    rd.innerHTML = '<div class="ri">' + (deck && clean ? "✓" : "!") + '</div><div><h3>' +
-      (deck && clean ? "Ready for the day" : (clean ? "Almost ready" : "Test mode")) + '</h3><ul class="checks">' +
-      '<li><span class="c ' + (deck ? "yes" : "no") + '">' + (deck ? "✓" : "•") + '</span>' + (deck ? "Presentation uploaded" : "Presentation not uploaded yet") + '</li>' +
-      '<li><span class="c yes">✓</span>Guest score set to ' + config.score + '</li>' +
-      '<li><span class="c ' + (clean ? "yes" : "no") + '">' + (clean ? "✓" : "•") + '</span>' + (clean ? "Quiz is clean, 0 answers" : list.length + " answers in the database (" + mock + " mock). Restart the quiz before the event.") + '</li>' +
+    rd.className = "ready " + (ready ? "ok" : "warn");
+    rd.innerHTML = '<div class="ri">' + (ready ? "\u2713" : "!") + '</div><div><h3>' + (ready ? "Ready for the day" : "Before the event") + '</h3><ul class="checks">' +
+      item(!!deck, "Presentation uploaded", "Upload the presentation (you can still present without it)") +
+      item(noMock, "No mock answers", "Delete the mock answers (" + mock + ")") +
+      item(clean, "Quiz is clean, 0 answers", "Restart the quiz (" + list.length + " answers in the database)") +
       '</ul></div>';
   }
 
