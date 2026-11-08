@@ -82,6 +82,10 @@ body:not(.host){padding-block:0}
 .hero{align-items:center;text-align:center;gap:10px}
 .score{display:flex;align-items:baseline;justify-content:center;gap:8px;font:800 6rem/1 var(--display);color:var(--orange);font-variant-numeric:tabular-nums}
 .score small{font:700 1.5rem var(--display);color:var(--muted)}
+.exp{margin:0;color:var(--muted);font-size:.95rem}
+.tier{display:inline-block;padding:4px 12px;border-radius:999px;background:var(--tint);color:var(--orange-d);font:700 .78rem var(--display);letter-spacing:.06em;text-transform:uppercase}
+.alpha{margin:0;font:700 .95rem var(--display)}
+.alpha.up{color:#2E9E57}.alpha.down{color:#C0392B}
 .meter{width:100%;height:10px;border-radius:5px;background:#EFEAE5;overflow:hidden}
 .meter>i{display:block;height:100%;background:var(--orange);border-radius:5px;transition:width .8s ease}
 .rank{margin:0;font-weight:600}
@@ -150,7 +154,63 @@ body:not(.host){padding-block:0}
 .ib:disabled{opacity:.3;cursor:default}
 .ib.danger:hover:not(:disabled),.ib.armed{color:#fff;background:#C0392B;border-color:#C0392B}
 .warnbox{margin:0;padding:12px 16px;border-radius:12px;background:#FFF6EC;border:1px solid #F6D2AE;font-size:.88rem}
-@media (max-width:560px){.qrow{flex-wrap:wrap}.qrow .tin{flex-basis:calc(100% - 40px)}.qact{margin-left:40px}}
+@media (max-width:560px){.qrow{flex-wrap:wrap}.qrow .tin{flex-basis:calc(100% - 70px)}.qact{margin-left:70px}}
+/* phone flow */
+.prow{justify-content:flex-start}
+.pcount{margin-left:auto}
+.backbtn{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:1.15rem;line-height:1;color:var(--ink);transition:transform .1s,background .15s}
+.backbtn:active{transform:scale(.92);background:#FAF7F4}
+.stagebox{position:relative;flex:1;display:flex;flex-direction:column;min-height:0;overflow-x:clip}
+.screen{flex:1;display:flex;flex-direction:column;gap:20px;padding:26px 0 10px;animation-duration:.3s;animation-fill-mode:both;animation-timing-function:cubic-bezier(.2,.75,.2,1)}
+.screen.center{justify-content:center}
+.screen.in-r{animation-name:inR}.screen.in-l{animation-name:inL}
+.screen.out-l{position:absolute;left:0;right:0;top:0;animation-name:outL}
+.screen.out-r{position:absolute;left:0;right:0;top:0;animation-name:outR}
+@keyframes inR{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes inL{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+@keyframes outL{to{opacity:0;transform:translateX(-40px)}}
+@keyframes outR{to{opacity:0;transform:translateX(40px)}}
+.bignum{margin:0;font:800 3.2rem/1 var(--display);color:var(--orange)}
+.qtext.xl{font-size:1.45rem;line-height:1.28}
+.title.big{font-size:1.9rem}
+.introbig{display:flex;flex-direction:column;gap:14px}
+.yn.stack{margin-top:auto;grid-template-columns:1fr;gap:12px;padding-bottom:6px}
+.yn.stack .pill{height:68px;font-size:1.15rem}
+.screen .go{margin-top:auto}
+.screen .chips{gap:10px}
+.screen .go:not(:disabled):active{transform:scale(.98)}
+.p.enter>*{animation:rise .55s cubic-bezier(.2,.75,.2,1) both}
+.p.enter>*:nth-child(2){animation-delay:.08s}
+.p.enter>*:nth-child(3){animation-delay:.16s}
+.p.enter>*:nth-child(4){animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen,.p.enter>*{animation:none!important}}
+/* editor layout, preview, drag */
+.qlayout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:22px;align-items:start}
+.qcol{display:flex;flex-direction:column;gap:18px;min-width:0}
+.pv{position:sticky;top:16px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.phone{width:320px;max-width:100%;height:600px;border:9px solid #2B2B2B;border-radius:36px;background:#fff;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.pvtop{padding:12px 16px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.pvtop .logo{height:40px}
+.pvbody{flex:1;min-height:0;overflow:hidden;padding:0 16px;display:flex;flex-direction:column;pointer-events:none}
+.pvbody .screen{animation:none;padding-top:18px}
+.pvbody .bignum{font-size:2.4rem}
+.pvbody .qtext.xl{font-size:1.2rem}
+.pvbody .title.big{font-size:1.45rem}
+.pvbody .yn.stack .pill{height:54px}
+.pvbody .go{height:50px}
+.pvnav{display:flex;align-items:center;gap:14px;font-size:.85rem;color:var(--muted)}
+.pvnav .ib{font-size:1.2rem}
+.grip{flex:none;align-self:center;cursor:grab;color:#B9B2AB;font-size:1rem;letter-spacing:-2px;padding:6px 2px;user-select:none}
+.grip:hover{color:var(--orange)}
+.qrow{border-radius:12px;transition:background .15s;position:relative}
+.qrow.dragging{opacity:.4}
+.qrow.drop-above::before,.qrow.drop-below::after{content:"";position:absolute;left:0;right:0;height:3px;border-radius:2px;background:var(--orange)}
+.qrow.drop-above::before{top:-7px}.qrow.drop-below::after{bottom:-7px}
+.qact .ib{border-color:transparent;background:transparent;color:var(--muted)}
+.qrow:hover .qact .ib,.qrow:focus-within .qact .ib{border-color:var(--line);background:#fff;color:var(--ink)}
+@media (hover:none){.qact .ib{border-color:var(--line)}}
+@media (max-width:980px){.qlayout{grid-template-columns:1fr}.pv{position:static}}
 .hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px;align-items:stretch}
 .hgrid .wide{grid-column:1/-1}
 .card.h{gap:12px}
@@ -338,7 +398,6 @@ function chart(scores, o){
   for (let k = 0; k < n; k++){
     const bh = (c[k]/ymax)*ih;
     s += '<rect class="bar' + (k === you ? ' you' : '') + '" x="' + f(X(k)-bw*.38) + '" y="' + f(base-bh) + '" width="' + f(bw*.76) + '" height="' + f(Math.max(bh,0)) + '" rx="' + f(Math.min(4,bw*.12)) + '"/>';
-    if (big && oc[k] > 0) s += '<text class="cnt" x="' + f(X(k)) + '" y="' + f(base-(oc[k]/ymax)*ih-fs*.5) + '" font-size="' + fs + '" text-anchor="middle">' + oc[k] + '</text>';
   }
   s += '<path class="line" d="M' + pts.join(' L') + '"/>';
   s += '<line class="axis" x1="' + pad.l + '" x2="' + (w-pad.r) + '" y1="' + f(base) + '" y2="' + f(base) + '"/>';
@@ -410,58 +469,68 @@ function start(){
   }
   const saveDraft = () => ls.set("pmcq_draft", JSON.stringify(draft));
 
-  function renderForm(){
-    const hasI = INSTRUMENTS.length > 0;
-    $app.innerHTML = '<div class="p form"><header class="ptop"><div class="prow"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos"><span class="pcount" id="pcount"></span></div>' +
-      '<div class="prog"><i id="pbar" style="width:0%"></i></div></header>' +
-      '<div class="intro"><h1 class="title">' + esc(FORM.title) + '</h1>' +
-      (FORM.subtitle ? '<p class="note">' + esc(FORM.subtitle) + '</p>' : '') + '</div>' +
-      QUESTIONS.map((q, n) =>
-        '<section class="card q" id="qc' + n + '"><div class="qhead"><p class="qno">' + (n+1) + '</p><span class="okmark" aria-hidden="true">✓</span></div><h2 class="qtext">' + esc(q.text) + '</h2>' +
-        '<div class="yn"><button class="pill yes" data-q="' + n + '" data-v="1" aria-pressed="false">Yes</button>' +
-        '<button class="pill no" data-q="' + n + '" data-v="0" aria-pressed="false">No</button></div></section>').join("") +
-      (hasI ? '<section class="card q" id="qci"><div class="qhead"><p class="qno">' + (NQ+1) + '</p></div><h2 class="qtext">' + esc(FORM.instrTitle) + '</h2>' +
-      (FORM.instrNote ? '<p class="note">' + esc(FORM.instrNote) + '</p>' : '') + '<div class="chips">' +
-      INSTRUMENTS.map(([k, l]) => '<button class="chip" data-i="' + esc(k) + '" aria-pressed="false"><span class="box"></span><span class="cl">' + esc(l) + '</span><b></b></button>').join("") +
-      '</div></section>' : '') +
-      '<div class="submitbar"><button class="go" id="submitBtn" disabled>See my score</button></div></div>';
-    paintForm();
+  /* one screen per question, slide transitions, tap to answer and move on */
+  function screenHTML(n){
+    if (n < 0) return '<div class="screen center"><div class="introbig"><h1 class="title big">' + esc(FORM.title) + '</h1>' +
+      (FORM.subtitle ? '<p class="note">' + esc(FORM.subtitle) + '</p>' : '') + '</div><button class="go" id="startBtn">Start</button></div>';
+    if (n < NQ){
+      return '<div class="screen qs"><p class="bignum">' + (n+1) + '</p><h2 class="qtext xl">' + esc(QUESTIONS[n].text) + '</h2>' +
+        '<div class="yn stack"><button class="pill yes" data-q="' + n + '" data-v="1" aria-pressed="false">Yes</button>' +
+        '<button class="pill no" data-q="' + n + '" data-v="0" aria-pressed="false">No</button></div></div>';
+    }
+    if (INSTRUMENTS.length){
+      return '<div class="screen qs"><p class="bignum">' + (NQ+1) + '</p><h2 class="qtext xl">' + esc(FORM.instrTitle) + '</h2>' +
+        (FORM.instrNote ? '<p class="note">' + esc(FORM.instrNote) + '</p>' : '') + '<div class="chips">' +
+        INSTRUMENTS.map(([k, l]) => '<button class="chip" data-i="' + esc(k) + '" aria-pressed="false"><span class="box"></span><span class="cl">' + esc(l) + '</span><b></b></button>').join("") +
+        '</div><button class="go" id="submitBtn">See my score</button></div>';
+    }
+    return '<div class="screen qs center"><h2 class="qtext xl">That was the last one.</h2><p class="note">Ready to see your return?</p><button class="go" id="submitBtn">See my score</button></div>';
   }
 
+  let cur = -1, busy = false;
   function answered(q){ const v = draft.a[QUESTIONS[q].id]; return v === 0 || v === 1; }
   function firstOpen(){ for (let q = 0; q < NQ; q++) if (!answered(q)) return q; return -1; }
 
-  function paintForm(){
-    document.querySelectorAll("[data-q]").forEach(b => {
+  function renderForm(){
+    $app.innerHTML = '<div class="p form flow"><header class="ptop"><div class="prow"><button class="backbtn" id="backBtn" aria-label="Back" hidden>←</button>' +
+      '<img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos"><span class="pcount" id="pcount"></span></div>' +
+      '<div class="prog"><i id="pbar" style="width:0%"></i></div></header><div class="stagebox" id="stagebox"></div></div>';
+    let n = -1;
+    if (Object.keys(draft.a).length || Object.keys(draft.i).length){ n = firstOpen(); if (n === -1) n = NQ; }
+    busy = false;
+    mountStep(n, 0, false);
+  }
+
+  function mountStep(n, d, animate){
+    const box = document.getElementById("stagebox"); if (!box) return;
+    const old = box.querySelector(".screen");
+    const tmp = document.createElement("div"); tmp.innerHTML = screenHTML(n);
+    const sc = tmp.firstChild;
+    const calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (animate && !calm){
+      sc.classList.add(d > 0 ? "in-r" : "in-l");
+      if (old){ old.classList.add(d > 0 ? "out-l" : "out-r"); setTimeout(() => old.remove(), 320); }
+    } else if (old) old.remove();
+    box.appendChild(sc);
+    cur = n; paintStep();
+    window.scrollTo(0, 0);
+  }
+
+  function goTo(n, d){ mountStep(Math.max(-1, Math.min(NQ, n)), d, true); }
+
+  function paintStep(){
+    document.querySelectorAll("#stagebox [data-q]").forEach(b => {
       b.setAttribute("aria-pressed", String(draft.a[QUESTIONS[+b.dataset.q].id] === parseInt(b.dataset.v, 10)));
     });
-    document.querySelectorAll("[data-i]").forEach(b => {
+    document.querySelectorAll("#stagebox [data-i]").forEach(b => {
       const on = !!draft.i[b.dataset.i];
       b.setAttribute("aria-pressed", String(on));
       b.lastElementChild.textContent = on ? "+1" : "";
     });
-    let done = 0;
-    for (let q = 0; q < NQ; q++){
-      const ok = answered(q);
-      if (ok) done++;
-      const c = document.getElementById("qc" + q);
-      if (c) c.classList.toggle("done", ok);
-    }
-    const btn = document.getElementById("submitBtn");
-    const cnt = document.getElementById("pcount"), bar = document.getElementById("pbar");
-    if (btn){
-      btn.disabled = done < NQ;
-      btn.textContent = done < NQ ? "Answer " + (NQ - done) + " more to continue" : "See my score";
-    }
-    if (cnt) cnt.textContent = done + " of " + NQ + " answered";
-    if (bar) bar.style.width = Math.round(done / Math.max(1, NQ) * 100) + "%";
-  }
-
-  function scrollToCard(id){
-    const el = document.getElementById(id);
-    if (!el) return;
-    const calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+    const cnt = document.getElementById("pcount"), bar = document.getElementById("pbar"), back = document.getElementById("backBtn");
+    if (cnt) cnt.textContent = cur < 0 ? "" : Math.min(cur + 1, NTOT) + " of " + NTOT;
+    if (bar) bar.style.width = Math.round(Math.max(0, cur) / Math.max(1, NTOT) * 100) + "%";
+    if (back) back.hidden = cur < 0;
   }
 
   function submit(){
@@ -483,18 +552,22 @@ function start(){
     const rank = others.length ? 'You outperformed ' + Math.round(lower/others.length*100) + '% of the room.' : 'You are the first one in. Others are still answering.';
     const o = state.outlier;
     const avg = all.length ? all.reduce((a, b) => a + b, 0) / all.length : 0;
-    $app.innerHTML = '<div class="p"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos">' +
-      '<div class="card hero"><p class="qno">Your return</p><div class="score"><span id="scoreNum">' + s + '</span><small>/ ' + MAX + '</small></div>' +
-      '<div class="meter"><i style="width:' + Math.round(s/MAX*100) + '%"></i></div><p class="rank">' + rank + '</p>' +
-      '<div class="mini"><div><b>' + avg.toFixed(1) + '</b><span>Benchmark</span></div><div><b>' + all.length + '</b><span>Answers so far</span></div></div></div>' +
+    const pct = MAX ? Math.round(s / MAX * 100) : 0, bpct = MAX ? Math.round(avg / MAX * 100) : 0, alpha = pct - bpct;
+    const tier = pct < 40 ? "Underweight" : pct < 60 ? "Market weight" : pct < 80 ? "Overweight" : "Aggressive growth";
+    $app.innerHTML = '<div class="p' + (first ? ' enter' : '') + '"><img class="logo" src="'+LOGO+'" alt="BPI Gestão de Ativos">' +
+      '<div class="card hero"><p class="qno">Your return</p><div class="score"><span id="scoreNum">+' + pct + '</span><small>%</small></div>' +
+      '<p class="exp">' + s + ' of ' + MAX + ' experiences</p><span class="tier">' + tier + '</span>' +
+      '<div class="meter"><i style="width:' + pct + '%"></i></div>' +
+      '<p class="alpha ' + (alpha >= 0 ? 'up' : 'down') + '">Alpha: ' + (alpha >= 0 ? '+' : '\u2212') + Math.abs(alpha) + ' pts vs the benchmark</p><p class="rank">' + rank + '</p>' +
+      '<div class="mini"><div><b>+' + bpct + '%</b><span>Benchmark</span></div><div><b>' + all.length + '</b><span>Answers so far</span></div></div></div>' +
       '<div class="card"><p class="qno">The room, live</p>' + chart(o ? all.concat([o.score]) : all, { w:360, h:250, fs:11, you:s, out: o ? { score:o.score, label:o.label, hot:true, alt:true } : null }) +
       '<p class="legend"><span><i class="sw"></i>You</span>' + (o ? '<span><i class="sw navy"></i>Our guest, ' + o.score + ' points</span>' : '') + '</p></div>' +
       '<p class="foot">Keep this page open and watch the main screen.</p></div>';
     const calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (first && !calm){
       const el = document.getElementById("scoreNum"), t0 = performance.now();
-      const tick = t => { const k = Math.min(1, (t - t0) / 700); el.textContent = Math.round(s * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); };
-      el.textContent = "0"; requestAnimationFrame(tick);
+      const tick = t => { const k = Math.min(1, (t - t0) / 700); el.textContent = "+" + Math.round(pct * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); };
+      el.textContent = "+0"; requestAnimationFrame(tick);
     }
   }
 
@@ -518,17 +591,17 @@ function start(){
     if (isHost) return;
     const yn = e.target.closest("[data-q]");
     if (yn){
+      if (busy) return;
+      busy = true;
       const q = parseInt(yn.dataset.q, 10);
-      const wasNext = firstOpen() === q;
-      draft.a[QUESTIONS[q].id] = parseInt(yn.dataset.v, 10); saveDraft(); paintForm();
-      if (wasNext){
-        const nx = firstOpen();
-        setTimeout(() => scrollToCard(nx === -1 ? (INSTRUMENTS.length ? "qci" : "submitBtn") : "qc" + nx), 260);
-      }
+      draft.a[QUESTIONS[q].id] = parseInt(yn.dataset.v, 10); saveDraft(); paintStep();
+      setTimeout(() => { busy = false; goTo(q + 1, 1); }, 260);
       return;
     }
     const ch = e.target.closest("[data-i]");
-    if (ch){ draft.i[ch.dataset.i] = !draft.i[ch.dataset.i]; saveDraft(); paintForm(); return; }
+    if (ch){ draft.i[ch.dataset.i] = !draft.i[ch.dataset.i]; saveDraft(); paintStep(); return; }
+    if (e.target.closest("#startBtn")){ const n = firstOpen(); goTo(n === -1 ? NQ : n, 1); return; }
+    if (e.target.closest("#backBtn")){ if (!busy) goTo(cur - 1, -1); return; }
     if (e.target.closest("#submitBtn")) submit();
   });
 
@@ -663,7 +736,18 @@ function start(){
     derive(); editorKey = JSON.stringify(FORM); scheduleSave();
     if (rerender) renderEditor(); else updateEditorMeta();
   }
+  let pvStep = -1;
+  const pvIndexOf = fi => { let k = 0; for (let j = 0; j < fi; j++) if (FORM.questions[j].text.trim()) k++; return k; };
+  function updatePreview(){
+    const body = $("#pvBody"); if (!body) return;
+    pvStep = Math.max(-1, Math.min(NQ, pvStep));
+    body.innerHTML = screenHTML(pvStep);
+    $("#pvPos").textContent = pvStep < 0 ? "Welcome" : "Screen " + (Math.min(pvStep + 1, NTOT)) + " of " + NTOT;
+    $("#pvCount").textContent = pvStep < 0 ? "" : Math.min(pvStep + 1, NTOT) + " of " + NTOT;
+    $("#pvBar").style.width = Math.round(Math.max(0, pvStep) / Math.max(1, NTOT) * 100) + "%";
+  }
   function updateEditorMeta(){
+    updatePreview();
     const sm = $("#qSummary"), w = $("#qWarn");
     if (sm) sm.textContent = NTOT + " questions on the phone (" + NQ + " yes or no" + (INSTRUMENTS.length ? ", plus the instruments question" : "") + "). Top score: " + MAX + " points.";
     if (w){
@@ -683,7 +767,7 @@ function start(){
       '<button class="ib danger" data-act="del" data-kind="' + kind + '" data-i="' + i + '"' + (minOne && n === 1 ? " disabled" : "") + ' aria-label="Remove">×</button></div>';
     el.innerHTML =
       '<p class="warnbox" id="qWarn" hidden></p>' +
-      '<div class="hgrid">' +
+      '<div class="qlayout"><div class="qcol">' +
       '<section class="card h"><h2 class="ct">Wording</h2><div class="fields one">' +
         field("title", "Quiz title (top of the phone)") +
         field("subtitle", "Subtitle") +
@@ -694,16 +778,18 @@ function start(){
         field("instrTitle", "Heading") + field("instrNote", "Helper line") + '</div>' +
         '<p class="note">Each ticked option is worth 1 point. Remove every option to hide this question.</p>' +
         '<ol class="qlist">' + f.instruments.map((it, i) =>
-          '<li class="qrow"><span class="qn">' + (i + 1) + '</span><input class="tin" type="text" data-il="' + i + '" value="' + esc(it.label) + '" placeholder="Option name">' + acts("i", i, f.instruments.length, false) + '</li>').join("") + '</ol>' +
+          '<li class="qrow" data-kind="i" data-idx="' + i + '"><span class="grip" data-grip title="Drag to reorder">\u22ee\u22ee</span><span class="qn">' + (i + 1) + '</span><input class="tin" type="text" data-il="' + i + '" value="' + esc(it.label) + '" placeholder="Option name">' + acts("i", i, f.instruments.length, false) + '</li>').join("") + '</ol>' +
         '<div class="row"><button class="b ghost" data-act="addi">+ Add option</button></div></section>' +
-      '<section class="card h wide"><h2 class="ct">Yes or no questions</h2>' +
+      '<section class="card h"><h2 class="ct">Yes or no questions</h2>' +
         '<p class="note">Write them as "Have you...", since people read them on their own phone. Each yes is worth 1 point.</p>' +
         '<ol class="qlist">' + f.questions.map((q, i) =>
-          '<li class="qrow"><span class="qn">' + (i + 1) + '</span><textarea class="tin" rows="2" data-qt="' + i + '" placeholder="Write the question">' + esc(q.text) + '</textarea>' + acts("q", i, f.questions.length, true) + '</li>').join("") + '</ol>' +
+          '<li class="qrow" data-kind="q" data-idx="' + i + '"><span class="grip" data-grip title="Drag to reorder">\u22ee\u22ee</span><span class="qn">' + (i + 1) + '</span><textarea class="tin" rows="2" data-qt="' + i + '" placeholder="Write the question">' + esc(q.text) + '</textarea>' + acts("q", i, f.questions.length, true) + '</li>').join("") + '</ol>' +
         '<div class="row"><button class="b ghost" data-act="addq">+ Add question</button></div></section>' +
-      '</div>' +
       '<section class="card h"><p class="note" id="qSummary"></p><div class="row"><button class="b ghost danger" data-act="reset">Reset to the original questions</button></div>' +
-      '<p class="note">Changes save by themselves and reach the phones straight away.</p></section>';
+      '<p class="note">Changes save by themselves and reach the phones straight away.</p></section>' +
+      '</div><aside class="pv"><p class="qno">Live phone preview</p><div class="phone"><div class="pvtop"><div class="prow"><img class="logo" src="'+LOGO+'" alt=""><span class="pcount" id="pvCount"></span></div>' +
+      '<div class="prog"><i id="pvBar" style="width:0%"></i></div></div><div class="pvbody" id="pvBody"></div></div>' +
+      '<div class="pvnav"><button class="ib" data-pv="-1" aria-label="Previous screen">\u2039</button><span id="pvPos"></span><button class="ib" data-pv="1" aria-label="Next screen">\u203a</button></div></aside></div>';
     updateEditorMeta();
   }
 
@@ -893,12 +979,59 @@ function start(){
     $app.addEventListener("input", e => {
       const t = e.target;
       if (t.dataset.f){ FORM[t.dataset.f] = t.value; commitForm(false); }
-      else if (t.dataset.qt !== undefined){ FORM.questions[+t.dataset.qt].text = t.value; commitForm(false); }
+      else if (t.dataset.qt !== undefined){ FORM.questions[+t.dataset.qt].text = t.value; pvStep = pvIndexOf(+t.dataset.qt); commitForm(false); }
       else if (t.dataset.il !== undefined){ FORM.instruments[+t.dataset.il].label = t.value; commitForm(false); }
+    });
+    /* the preview follows whatever is being edited */
+    $app.addEventListener("focusin", e => {
+      const t = e.target; if (!t.dataset) return;
+      if (t.dataset.f === "title" || t.dataset.f === "subtitle") pvStep = -1;
+      else if (t.dataset.qt !== undefined) pvStep = pvIndexOf(+t.dataset.qt);
+      else if (t.dataset.il !== undefined || t.dataset.f === "instrTitle" || t.dataset.f === "instrNote") pvStep = NQ;
+      else return;
+      updatePreview();
+    });
+    /* drag rows by the grip to reorder */
+    let drag = null;
+    const clearMarks = () => document.querySelectorAll(".dragging,.drop-above,.drop-below").forEach(x => x.classList.remove("dragging", "drop-above", "drop-below"));
+    $app.addEventListener("mousedown", e => { const g = e.target.closest("[data-grip]"); if (g) g.closest("li").draggable = true; });
+    document.addEventListener("mouseup", () => { if (!drag) document.querySelectorAll("li.qrow[draggable=true]").forEach(l => { l.draggable = false; }); });
+    $app.addEventListener("dragstart", e => {
+      const li = e.target.closest && e.target.closest("li.qrow"); if (!li) return;
+      drag = { kind: li.dataset.kind, i: +li.dataset.idx };
+      e.dataTransfer.effectAllowed = "move";
+      try { e.dataTransfer.setData("text/plain", "row"); } catch(err){}
+      li.classList.add("dragging");
+    });
+    $app.addEventListener("dragover", e => {
+      if (!drag) return;
+      const li = e.target.closest("li.qrow"); if (!li || li.dataset.kind !== drag.kind) return;
+      e.preventDefault();
+      document.querySelectorAll(".drop-above,.drop-below").forEach(x => x.classList.remove("drop-above", "drop-below"));
+      const r = li.getBoundingClientRect();
+      li.classList.add(e.clientY < r.top + r.height / 2 ? "drop-above" : "drop-below");
+    });
+    $app.addEventListener("drop", e => {
+      if (!drag) return;
+      const li = e.target.closest("li.qrow"); if (!li || li.dataset.kind !== drag.kind) return;
+      e.preventDefault();
+      const r = li.getBoundingClientRect();
+      let to = +li.dataset.idx + (e.clientY < r.top + r.height / 2 ? 0 : 1);
+      const list = drag.kind === "i" ? FORM.instruments : FORM.questions;
+      const [it] = list.splice(drag.i, 1);
+      if (drag.i < to) to--;
+      list.splice(to, 0, it);
+      drag = null; clearMarks(); commitForm(true);
+    });
+    $app.addEventListener("dragend", () => {
+      drag = null; clearMarks();
+      document.querySelectorAll("li.qrow").forEach(l => { l.draggable = false; });
     });
     $app.addEventListener("click", e => {
       const tb = e.target.closest("[data-tab]");
       if (tb){ homeTab = tb.dataset.tab; applyTab(); return; }
+      const pvb = e.target.closest("[data-pv]");
+      if (pvb){ pvStep += +pvb.dataset.pv; updatePreview(); return; }
       const b = e.target.closest("[data-act]"); if (!b) return;
       const act = b.dataset.act, i = +b.dataset.i;
       const list = b.dataset.kind === "i" ? FORM.instruments : FORM.questions;

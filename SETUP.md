@@ -5,11 +5,13 @@ Painel de controlo (para ti e para o teu pai): https://verapvst.github.io/pmc-qu
 
 ## O quiz
 
+No telemóvel cada pergunta ocupa o ecrã todo: toca em Yes ou No, passa sozinho para a seguinte com uma animação, e há uma seta para voltar atrás. A barra de progresso fica no topo.
+
 Título: "How’s your portfolio of experiences?". São 13 perguntas (12 de sim ou não, "Have you...", mais uma sobre instrumentos financeiros), no máximo 17 pontos. No fim cada pessoa vê "Your return" (a sua pontuação), o "Benchmark" (média da sala), a frase "You outperformed X% of the room." e o gráfico da sala.
 
 ## Separador Quiz
 
-No painel há dois separadores: Control room e Quiz. No separador Quiz o teu pai pode editar o título e o subtítulo, a frase do slide do QR (o {n} vira o número de perguntas), as perguntas de sim ou não (escrever, acrescentar, apagar com dois cliques, subir e descer) e a pergunta dos instrumentos (título, opções, ordem). As alterações guardam sozinhas e chegam logo aos telemóveis. O topo da pontuação ajusta-se ao número de perguntas. Se já houver respostas, aparece um aviso: depois de editar, faz Restart quiz. O botão "Reset to the original questions" volta às perguntas iniciais.
+No painel há dois separadores: Control room e Quiz. No separador Quiz o teu pai pode editar o título e o subtítulo, a frase do slide do QR (o {n} vira o número de perguntas), as perguntas de sim ou não (escrever, acrescentar, apagar com dois cliques, arrastar pelo ícone dos pontos ou usar as setas) e a pergunta dos instrumentos (título, opções, ordem). À direita há uma pré-visualização do telemóvel que acompanha o que ele está a editar. As alterações guardam sozinhas e chegam logo aos telemóveis. O topo da pontuação ajusta-se ao número de perguntas. Se já houver respostas, aparece um aviso: depois de editar, faz Restart quiz. O botão "Reset to the original questions" volta às perguntas iniciais.
 
 ## Painel de controlo (separador Control room)
 
